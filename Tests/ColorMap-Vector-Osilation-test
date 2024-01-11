@@ -1,41 +1,78 @@
 import cv2
 import numpy as np
 
-MovingColorMap = cv2.VideoCapture('WHOH1.gif')
+MovingColorMap = cv2.VideoCapture('WHOH2.gif')
 
-ColorMap = cv2.imread('Images/HappyEx/Eye/Gradient.png')
+Prootbefore = cv2.imread('Prootbefore.png')
 
 blank = np.zeros([32, 64], dtype='uint8')
 
 #        Width1                   Height1
-pts = np.array([
-    [1,  3],
-    [9,  1],
-    [10, 1],
-    [13, 0],
-    [15, 1],
-    [18, 1],
-    [23, 3],
-    [23, 4],
-    [20, 5],
-    [19, 6],
-    [4,  3]
+EyeVertices = np.array([
+    [0,    3], #far Left
+    [6,    5],
+    [11,   5],
+    [20,   7],
+    [24,   6],
+    [24,   4],
+    [18,   1],
+    [15,   0],
+    [12,   0]
 ], np.int32)
 
-mask = cv2.fillConvexPoly(blank, pts, 255, 0, 0)
+MouthVertices = np.array([
+    [14,  19],
+    [32,  29],
+    [45,  23],
+    [53,  23],
+    [61,  26],
+    [59,  27],
+    [52,  25],
+    [46,  25],
+    [34,  31],
+    [29,  31],
+    [19,  25],
+    [11,  25],
+    [7,   21],
+    [10,  20]
+
+], np.int32)
+
+NoseVertices = np.array([
+    #counterclockwise
+    [63,  10],#bottom of nose
+    [63,  6],
+    [63,  4],
+    [61,  2],
+    [56,  1],
+    [56,  1],
+    [53,  2], #far left of nose end point
+    [57,  2],
+    [61,  5],
+    [63, 10],
+
+
+], np.int32)
+
+
+EyeVector = cv2.fillConvexPoly(blank, EyeVertices, 255, 0, 0)
+MouthVector = cv2.fillPoly(blank, [MouthVertices], 255)
+NoseVector = cv2.fillConvexPoly(blank, NoseVertices,255)
+mask = EyeVector + MouthVector + NoseVector
 
 while True:
     # Capture frame-by-frame
     ret, frame = MovingColorMap.read()
     if ret == True:
-
+        PROOTBEFORE = cv2.resize(Prootbefore, [1600, 800])
         masked = cv2.bitwise_and(frame, frame, mask=mask)
-        cool = cv2.resize( masked, [1900,1080])
-        cv2.imshow('Frame', cool)
+        TEST_OUTPUT = cv2.resize( masked, [1600,800])
+        cv2.imshow('TEST_OUTPUT', TEST_OUTPUT)
+        cv2.imshow('BEFORE', PROOTBEFORE)
         # Press Q on keyboard to  exit
         if cv2.waitKey(25) & 0xFF == ord('q'):
             break
 
     # Break the loop
     else:
-        MovingColorMap.set(cv2.CAP_PROP_POS_FRAMES, 0)
+       MovingColorMap.set(cv2.CAP_PROP_POS_FRAMES, 0)
