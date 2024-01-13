@@ -1,10 +1,12 @@
+import copy
+
 import cv2
 import numpy as np
 import time
 
 #cool changable variables
-GradientScrollSpeed = 10000
-BlinkDisplayDuration = 1
+GradientScrollSpeed = 0.3
+BlinkDisplayDuration = 6
 BlinkSpeed = 0.1
 
 
@@ -39,7 +41,7 @@ EyeVertices = np.array([
     [12,   0] #top left on top of the angle
 ], np.int32)
 
-EyeVerticesDefault = np.copy(EyeVertices)
+EyeVerticesDefault = copy.deepcopy(EyeVertices)
 
 MouthVertices = np.array([
     [14,  19],
@@ -82,18 +84,16 @@ def BlinkUp(XY):
     XY[1] += 1
 
 def BlinkUpdate():
-    global SucessfullRunthroughs
     global BlinkState
     global I
     XY = EyeVertices[I]
     XYD = EyeVerticesDefault[I]
+
     if XY[1] <= 3:
         if BlinkState == True:
             BlinkUp(XY)
         else:
-            if XY[1]==XYD[1]:
-                SucessfullRunthroughs=SucessfullRunthroughs+1
-            elif XY[1] > XYD[1]:
+            if XY[1] > XYD[1]:
                 BlinkDown(XY)
             elif XY[1] < XYD[1]:
                 BlinkUp(XY)
@@ -101,26 +101,22 @@ def BlinkUpdate():
         if BlinkState == True:
             BlinkDown(XY)
         else:
-            if XY[1] == XYD[1]:
-                SucessfullRunthroughs=SucessfullRunthroughs+1
-            elif XY[1] < XYD[1]:
+            if XY[1] < XYD[1]:
                 BlinkUp(XY)
             elif XY[1] > XYD[1]:
                 BlinkDown(XY)
-
     if EyeVertices[3][1] == 3:#  opens the eye
         BlinkState=False
-    if SucessfullRunthroughs == 16: # ends loop
+    if np.array_equal(EyeVertices,EyeVerticesDefault) and BlinkState==False: # ends loop
         global IsBlink
         global StartTime
         StartTime = time.time()
         IsBlink = False
-        SucessfullRunthroughs=0
         I=0
         return None
     I=I+1
     if I >= 9:
-        I=0
+        I = 0
 EyeVector = cv2.fillConvexPoly(blank, EyeVertices, 255, 0, 0)
 MouthVector = cv2.fillPoly(blank, [MouthVertices], 255)  # i have yet to do anything with these but they are ver
 NoseVector = cv2.fillConvexPoly(blank, NoseVertices, 255)
