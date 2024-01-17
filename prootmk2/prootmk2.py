@@ -1,16 +1,15 @@
+import time
 import copy
-
+from io import BytesIO
+from rgbmatrix import RGBMatrix, RGBMatrixOptions
+from PIL import Image
 import cv2
 import numpy as np
-import time
 
 #cool changable variables
-GradientScrollSpeed = 0.3
-BlinkDisplayDuration = 6
-BlinkSpeed = 0.1
-
-
-
+GradientScrollSpeed = 0.05 #seconds per frame
+BlinkDisplayDuration = 6 #seconds
+BlinkSpeed = 0.03       #seconds
 
 #Do not change just global declaration ill clean up later
 StartTime=0
@@ -22,14 +21,37 @@ Y=0
 I=0
 SucessfullRunthroughs = 0
 
+#         Screen settings DO NOT CHANGE UNLESS ABSOLUTLY NESSISARY
+def settings(pixel_mapper_config):
+    options = RGBMatrixOptions()
+    options.brightness = 100
+    options.disable_hardware_pulsing=False
+    options.rows = 32
+    options.hardware_mapping='adafruit-hat-pwm'
+    options.cols = 64
+    options.drop_privileges = 0
+    options.gpio_slowdown = 3
+    options.chain_length = 2
+    options.parallel = 1
+    options.pixel_mapper_config = pixel_mapper_config
+    return RGBMatrix(options=options)
+
+#Screens
+RightMatrix = settings("None")
+LeftMatrix = settings("Mirror:H")
+
+def Display(Matrix, image_path):
+    image = Image.open(image_path)
+    image.thumbnail((Matrix.width, Matrix.height), Image.LANCZOS)
+    Matrix.SetImage(image)
+
 MovingColorMap = cv2.VideoCapture('WHOH1.gif')
 
-Prootbefore = cv2.imread('Prootbefore.png')
 
 blank = np.zeros([32, 64], dtype='uint8')
 
 #        Width1                   Height1
-EyeVertices = np.array([
+RightMatrixVertices = np.array([
     [0,    3], #far Left
     [6,    5],
     [11,   5],
@@ -41,7 +63,7 @@ EyeVertices = np.array([
     [12,   0] #top left on top of the angle
 ], np.int32)
 
-EyeVerticesDefault = copy.deepcopy(EyeVertices)
+RightMatrixVerticesDefault = copy.deepcopy(RightMatrixVertices)
 
 MouthVertices = np.array([
     [14,  19],
@@ -86,8 +108,8 @@ def BlinkUp(XY):
 def BlinkUpdate():
     global BlinkState
     global I
-    XY = EyeVertices[I]
-    XYD = EyeVerticesDefault[I]
+    XY = RightMatrixVertices[I]
+    XYD = RightMatrixVerticesDefault[I]
 
     if XY[1] <= 3:
         if BlinkState == True:
@@ -105,9 +127,9 @@ def BlinkUpdate():
                 BlinkUp(XY)
             elif XY[1] > XYD[1]:
                 BlinkDown(XY)
-    if EyeVertices[3][1] == 3:#  opens the eye
+    if RightMatrixVertices[3][1] == 3:#  opens the RightMatrix
         BlinkState=False
-    if np.array_equal(EyeVertices,EyeVerticesDefault) and BlinkState==False: # ends loop
+    if np.array_equal(RightMatrixVertices,RightMatrixVerticesDefault) and BlinkState==False: # ends loop
         global IsBlink
         global StartTime
         StartTime = time.time()
@@ -117,9 +139,11 @@ def BlinkUpdate():
     I=I+1
     if I >= 9:
         I = 0
-EyeVector = cv2.fillConvexPoly(blank, EyeVertices, 255, 0, 0)
+
+RightMatrixVector = cv2.fillConvexPoly(blank, RightMatrixVertices, 255, 0, 0)
 MouthVector = cv2.fillPoly(blank, [MouthVertices], 255)  # i have yet to do anything with these but they are ver
 NoseVector = cv2.fillConvexPoly(blank, NoseVertices, 255)
+
 while True:
     ElapsedTimeF = time.time() - StartTimeF
     if ElapsedTimeF >= GradientScrollSpeed:
@@ -131,21 +155,26 @@ while True:
 
     ElapsedTime = time.time() - StartTime
     ElapsedTimeBS = time.time() - StartTimeBS
-    if IsBlink == True and ElapsedTimeBS >= BlinkSpeed: #skips the wait to continue the animation
+    if IsBlink == True and ElapsedTimeBS >= BlinkSpeed:  # skips the wait to continue the animation
         BlinkUpdate()
-        EyeVector = cv2.fillConvexPoly(blank, EyeVertices, 255, 0, 0) #updates sprite for eye
+        RightMatrixVector = cv2.fillConvexPoly(blank, RightMatrixVertices, 255, 0, 0)  # updates sprite for RightMatrix
         StartTimeBS = time.time()
     elif ElapsedTime >= BlinkDisplayDuration and IsBlink == False:
         BlinkState = True
         IsBlink = True
         BlinkUpdate()
+    
     blank = np.zeros_like(blank)
-    MouthVector = cv2.fillPoly(blank, [MouthVertices], 255)  # i have yet to do anything with these but they are ver
+    MouthVector = cv2.fillPoly(blank, [MouthVertices], 255)  # used but not important
     NoseVector = cv2.fillConvexPoly(blank, NoseVertices, 255)
-    mask = EyeVector + MouthVector + NoseVector
+    mask = RightMatrixVector + MouthVector + NoseVector
     masked = cv2.bitwise_and(frame, frame, mask=mask)
-    TEST_OUTPUT = cv2.resize( masked, [1600,800])
-    cv2.imshow('TEST_OUTPUT', TEST_OUTPUT)
-    # Press Q on keyboard to  exit
-    if cv2.waitKey(1) & 0xFF == ord('q'):
-        break
+    #Save to memory not the drive which was weirdly complicated
+    pil_image = Image.fromarray(cv2.cvtColor(masked,cv2.COLOR_BGR2RGB))
+    memory_image = BytesIO()
+    pil_image.save(memory_image, format='png')
+    
+    #Update screen
+    Display(RightMatrix, memory_image)
+    Display(LeftMatrix, memory_image)
+
