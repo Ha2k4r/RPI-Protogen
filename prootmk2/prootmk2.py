@@ -24,17 +24,22 @@ SucessfullRunthroughs = 0
 #         Screen settings DO NOT CHANGE UNLESS ABSOLUTLY NESSISARY
 def settings(pixel_mapper_config):
     options = RGBMatrixOptions()
+    options.drop_privileges=True
     options.brightness = 100
-    options.disable_hardware_pulsing=False
     options.rows = 32
     options.hardware_mapping='adafruit-hat-pwm'
     options.cols = 64
+    options.scan_mode = 1
+    options.show_refresh_rate = True
     options.drop_privileges = 0
     options.gpio_slowdown = 3
     options.chain_length = 2
+    options.pwm_lsb_nanoseconds = 50
+    options.limit_refresh_rate_hz = 200
     options.parallel = 1
     options.pixel_mapper_config = pixel_mapper_config
     return RGBMatrix(options=options)
+
 
 #Screens
 RightMatrix = settings("None")
