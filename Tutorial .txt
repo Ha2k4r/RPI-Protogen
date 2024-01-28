@@ -11,10 +11,43 @@ sudo apt upgrade -y
 
 sudo apt install git
 
+sudo apt-get install python3-dev -y
+
+sudo apt install python3-pil
+
+sudo apt install python3-opencv
+
+cd /etc/modprobe.d
+
+sudo nano alsa-blacklist.conf
+
+at the very top line type in "blacklist snd_bcm2835"
+
+press ctrl-X
+
+press y
+
+press enter
+
+sudo reboot now
+
+wait for the reboot and then reconnect like normal
 
 (packages needed section)
 
 sudo git clone https://github.com/hzeller/rpi-rgb-led-matrix.git
 
 sudo git clone https://github.com/Ha2k4r/RPI-Protogen.git
+
+(actuall setup)
+
+cd rpi-rgb-led-matrix
+
+make build-python PYTHON=$(which python 3)
+
+sudo make install-python
+
+cd bindings/python/samples/
+
+
 
