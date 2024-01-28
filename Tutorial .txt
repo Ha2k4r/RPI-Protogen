@@ -1,0 +1,20 @@
+After flashing the microsd card or flash drive (recomended), SSH or remote desktop in or directly on the device follow the instructions below
+
+open terminal and type in this in order:
+
+(setup area these are the dependencys you will need)
+
+
+sudo apt update
+
+sudo apt upgrade -y
+
+sudo apt install git
+
+
+(packages needed section)
+
+sudo git clone https://github.com/hzeller/rpi-rgb-led-matrix.git
+
+sudo git clone https://github.com/Ha2k4r/RPI-Protogen.git
+
