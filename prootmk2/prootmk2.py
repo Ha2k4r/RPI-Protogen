@@ -11,7 +11,7 @@ GradientScrollSpeed = 0.05 #seconds per frame
 BlinkDisplayDuration = 6 #seconds
 BlinkSpeed = 0.03       #seconds
 
-#Do not change just global declaration ill clean up later
+#Global declarations; ignore pls
 StartTime=0
 StartTimeF=0
 StartTimeBS= time.time() + BlinkDisplayDuration # lol two birds and one stone with this one
@@ -19,15 +19,12 @@ IsBlink=False
 BlinkState=False #True for Closed False for Open
 Y=0
 I=0
-SucessfullRunthroughs = 0
 
-#         Screen settings DO NOT CHANGE UNLESS ABSOLUTLY NESSISARY
+#   Screen Settings 
 def settings(pixel_mapper_config):
     options = RGBMatrixOptions()
-    options.drop_privileges=True
     options.brightness = 100
-    options.rows = 32
-    options.hardware_mapping='adafruit-hat-pwm'
+    options.rows = 32     options.hardware_mapping='adafruit-hat-pwm'
     options.cols = 64
     options.scan_mode = 1
     options.show_refresh_rate = True
