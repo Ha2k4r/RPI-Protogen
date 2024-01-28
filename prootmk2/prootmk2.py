@@ -25,7 +25,7 @@ def settings(pixel_mapper_config):
     options = RGBMatrixOptions()
     options.brightness = 100
     options.rows = 32     
-  options.hardware_mapping='adafruit-hat-pwm'
+    options.hardware_mapping='adafruit-hat-pwm'
     options.cols = 64
     options.scan_mode = 1
     options.show_refresh_rate = True
