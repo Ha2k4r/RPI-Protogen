@@ -43,11 +43,21 @@ sudo git clone https://github.com/Ha2k4r/RPI-Protogen.git
 
 cd rpi-rgb-led-matrix
 
-make build-python PYTHON=$(which python 3)
+sudo make build-python PYTHON=$(which python 3)
 
 sudo make install-python
 
-cd bindings/python/samples/
+cd 
+
+cd RPI-Protogen/prootmk2 
+
+sudo python3 prootmk2.py
+
+If everything worked scheduel a chron job and your done!
+in the meantime im off to inprove this code one line at a time :3
+
+
+
 
 
 
