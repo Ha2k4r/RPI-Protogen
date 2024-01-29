@@ -6,45 +6,70 @@ from PIL import Image
 import cv2
 import numpy as np
 
-#cool changable variables
-GradientScrollSpeed = 0.05 #seconds per frame
-BlinkDisplayDuration = 6 #seconds
-BlinkSpeed = 0.03       #seconds
+#Changeable variables
+GradientScrollSpeed = 0.05 
+BlinkDisplayDuration = 6 
+BlinkSpeed = 0.03
+MouthUpdateSpeed = 6
+NoseUpdateSpeed = 6
 
-#Global declarations; ignore pls
+Drop_Privs = False
+Show_Refresh = False
+Refresh_Hertz_Cap = 200
+Global_Nano_Seconds = 50
+
+#Declarations ignore
+StartTimeN = 0
 StartTime=0
 StartTimeF=0
-StartTimeBS= time.time() + BlinkDisplayDuration # lol two birds and one stone with this one
+StartTimeBS= time.time() + BlinkDisplayDuration
+StartTimeM = 0
 IsBlink=False
 BlinkState=False #True for Closed False for Open
 Y=0
 I=0
+SucessfullRunthroughs = 0
 
-#   Screen Settings 
+#         Screen settings DO NOT CHANGE UNLESS ABSOLUTLY NESSISARY
 def settings(pixel_mapper_config):
-    options = RGBMatrixOptions()
-    options.brightness = 100
-    options.rows = 32     
-    options.hardware_mapping='adafruit-hat-pwm'
-    options.cols = 64
-    options.scan_mode = 1
-    options.show_refresh_rate = True
-    options.drop_privileges = 0
-    options.gpio_slowdown = 3
-    options.chain_length = 2
-    options.pwm_lsb_nanoseconds = 50
-    options.limit_refresh_rate_hz = 200
-    options.parallel = 1
-    options.pixel_mapper_config = pixel_mapper_config
-    return RGBMatrix(options=options)
-
+    if (pixel_mapper_config == True):
+            options = RGBMatrixOptions()
+            options.drop_privileges= Drop_Privs
+            options.brightness = 100
+            options.rows = 32
+            options.hardware_mapping='adafruit-hat-pwm'
+            options.cols = 64
+            options.scan_mode = 1
+            options.show_refresh_rate = Show_Refresh
+            options.gpio_slowdown = 3
+            options.chain_length = 2
+            options.pwm_lsb_nanoseconds = Global_Nano_Seconds
+            options.limit_refresh_rate_hz = Refresh_Hertz_Cap
+            options.parallel = 1
+            return RGBMatrix(options=options)
+    else:
+            options = RGBMatrixOptions()
+            options.drop_privileges= Drop_Privs
+            options.brightness = 100
+            options.rows = 32
+            options.hardware_mapping='adafruit-hat-pwm'
+            options.cols = 64
+            options.scan_mode = 1
+            options.show_refresh_rate = Show_Refresh
+            options.gpio_slowdown = 3
+            options.chain_length = 2
+            options.pwm_lsb_nanoseconds = Global_Nano_Seconds
+            options.limit_refresh_rate_hz = Refresh_Hertz_Cap
+            options.parallel = 1
+            options.pixel_mapper_config = "Mirror:H"
+            return RGBMatrix(options=options)
 
 #Screens
-RightMatrix = settings("None")
-LeftMatrix = settings("Mirror:H")
+LeftMatrix = settings(True)
+RightMatrix = settings(False)
 
-def Display(Matrix, image_path):
-    image = Image.open(image_path)
+def Display(Matrix, preprocessed_image):
+    image = Image.fromarray(cv2.cvtColor(preprocessed_image, cv2.COLOR_BGR2RGB))
     image.thumbnail((Matrix.width, Matrix.height), Image.LANCZOS)
     Matrix.SetImage(image)
 
@@ -150,8 +175,9 @@ NoseVector = cv2.fillConvexPoly(blank, NoseVertices, 255)
 while True:
     ElapsedTimeF = time.time() - StartTimeF
     if ElapsedTimeF >= GradientScrollSpeed:
-        # Capture frame-by-frame
+        # Display Gradient
         ret, frame = MovingColorMap.read()
+        changed = True
         StartTimeF = time.time()
         if MovingColorMap.get(cv2.CAP_PROP_FRAME_COUNT) == MovingColorMap.get(cv2.CAP_PROP_POS_FRAMES):
             MovingColorMap.set(cv2.CAP_PROP_POS_FRAMES, 0)
@@ -162,22 +188,32 @@ while True:
         BlinkUpdate()
         RightMatrixVector = cv2.fillConvexPoly(blank, RightMatrixVertices, 255, 0, 0)  # updates sprite for RightMatrix
         StartTimeBS = time.time()
+        changed = True
     elif ElapsedTime >= BlinkDisplayDuration and IsBlink == False:
         BlinkState = True
         IsBlink = True
         BlinkUpdate()
+        changed = True
     
-    blank = np.zeros_like(blank)
-    MouthVector = cv2.fillPoly(blank, [MouthVertices], 255)  # used but not important
-    NoseVector = cv2.fillConvexPoly(blank, NoseVertices, 255)
-    mask = RightMatrixVector + MouthVector + NoseVector
-    masked = cv2.bitwise_and(frame, frame, mask=mask)
-    #Save to memory not the drive which was weirdly complicated
-    pil_image = Image.fromarray(cv2.cvtColor(masked,cv2.COLOR_BGR2RGB))
-    memory_image = BytesIO()
-    pil_image.save(memory_image, format='png')
+    ElapsedTimeM = time.time() - StartTimeM
+    if ElapsedTimeM >= MouthUpdateSpeed:
+        MouthVector = cv2.fillPoly(blank, [MouthVertices], 255)
+        StartTimeM = time.time()
+        changed = True
+        
+    ElapsedTimeN = time.time() - StartTimeN
+    if ElapsedTimeN >= NoseUpdateSpeed:
+        NoseVector = cv2.fillConvexPoly(blank, NoseVertices, 255)
+        StartTimeN = time.time()
+        changed = True
     
-    #Update screen
-    Display(RightMatrix, memory_image)
-    Display(LeftMatrix, memory_image)
-
+    if changed == True:
+        mask = RightMatrixVector + MouthVector + NoseVector
+        masked = cv2.bitwise_and(frame, frame, mask=mask)
+        blank = np.zeros_like(blank) 
+        
+        #Update screen
+        Display(RightMatrix, masked)
+        Display(LeftMatrix, masked)
+        
+        changed = False
