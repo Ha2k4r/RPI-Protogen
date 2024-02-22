@@ -1,0 +1,41 @@
+import math
+import ExpressionVectors
+#how many frames before it should reach its target vertices
+cycles = 12
+#its really finicky and i would recomend making many different versions of these for your transitions or submitting a pull request that does this automatically
+#im always looking to inprove submit somthing :3
+Calibration = 1.06
+#final output
+Trajectory_Numbers=[]
+
+#call this function and it will return an organic logarithmic path to the target cordinate
+def Organic_Curve_Generate(Array, Target_Array, cycles):
+    global Trajectory_Numbers
+    if len(Array) == len(Target_Array):
+        for (x1, y1), (x2, y2) in zip(Array, Target_Array):
+            if x1 == x2 and y1 == y2:
+                #print("Skipping calculation for equal start and end points.")
+                continue  
+            #this is the hardest peice of math here :/
+            increment_factor_x = math.log(x2 / x1) / cycles if x2 != x1 else 0
+            increment_factor_y = math.log(y2 / y1) / cycles if y2 != y1 else 0
+            #this iterates through the cycles
+            for num in range(cycles):
+                
+                current_point_x = round(x1 + (x2 - x1) * (Calibration - math.exp(-increment_factor_x * (num + 1))))
+                current_point_y = round(y1 + (y2 - y1) * (Calibration - math.exp(-increment_factor_y * (num + 1))))
+                if num == 0:
+                    Trajectory_Numbers.append([current_point_x, current_point_y])
+                elif num == cycles - 1:
+                    Trajectory_Numbers[-1].extend([x2, y2])
+                else:
+                    Trajectory_Numbers[-1].extend([current_point_x, current_point_y])
+                #ill scatter these if you wish to learn more about how it works
+                #print(f"Current Point: ({current_point_x}, {current_point_y})")
+    else:
+        print("ERROR: Arrays Passed into plotter have different lengths, you probably were tinkering with expressions and made them uneven sizes or passed the wrong variable.")
+
+
+Organic_Curve_Generate(ExpressionVectors.EyeHappyArray, ExpressionVectors.EyeClosedHappyArray, cycles)
+print(Trajectory_Numbers)
+Count=0
