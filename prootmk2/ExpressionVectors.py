@@ -1,12 +1,11 @@
 import numpy as np
-import copy
 #This file is for the XY cordinates that form the geomatry of the sprites for the Eyes Nose and mouth
 #if you would like different shapes for your facial features this is the file you change, each expression will be differnt shapes
 
 #        Width1                   Height1
 
 EyeHappyArray = np.array([
-    [0, 3],  # far Left
+    [0, 4],  # far Left
     [6, 5],
     [11, 5],
     [20, 7],
@@ -18,18 +17,16 @@ EyeHappyArray = np.array([
 ], np.int32)
 
 EyeClosedHappyArray = np.array([
-    [0, 60],  # far Left
-    [6, 6],
-    [11, 6],
-    [20, 6],
-    [24, 6],
-    [24, 4],
+    [0,  1],  # far Left
+    [6,  1],
+    [11, 1],
+    [20, 1],
+    [24, 1],
+    [24, 1],
     [18, 1],
     [15, 0],
     [12, 0]  # top left on top of the angle
 ], np.int32)
-
-EyeHappyDefault = copy.deepcopy(EyeHappyArray)
 
 MouthHappyArray = np.array([
     [14, 19],
