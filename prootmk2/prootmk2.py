@@ -133,8 +133,12 @@ while True:
 
     #Update screens
     if changed and not DebugMode:
+        mask = EyeVector + MouthVector + NoseVector
+        masked = cv2.bitwise_and(frame, frame, mask=mask)
         LeftMatrix = settings(True, Brightness)
         RightMatrix = settings(False, Brightness)
+        
+        changed = False
 
         Display(RightMatrix, masked)
         Display(LeftMatrix, masked)
@@ -148,5 +152,3 @@ while True:
         cv2.imshow("image", masked)
         cv2.waitKey(1)
         changed = False
-        if len(EyeChords) != 9:
-            print("EyeChords is not 9")
