@@ -60,3 +60,31 @@ NoseHappyArray = np.array([
     [63, 10],
 
 ], np.int32)
+
+BlushEyeVectors = np.array([
+    [0, 5],  # far Left
+    [3, 8],
+    [13, 5],
+    [18, 5],
+    [23, 8],
+    [24, 8],
+    [23, 3],
+    [19, 1],
+    [13, 1],
+    [8, 4]  # top left on top of the angle
+], np.int32)
+
+BlushStripe1 = np.array([
+    [3, 10],  # far Left
+    [7, 16]
+], np.int32)
+
+BlushStripe2 = np.array([
+    [6, 9],  # far Left
+    [10, 15]
+], np.int32)
+
+BlushStripe3 = np.array([
+    [11, 10],  # far Left
+    [12, 14]
+], np.int32)
