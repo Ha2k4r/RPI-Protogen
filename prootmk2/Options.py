@@ -1,3 +1,8 @@
+from os.path import dirname, realpath, join
+from sys import path
+
+current_dir = dirname(realpath(__file__))
+
 from cv2 import imread,VideoCapture
 
 #Output settings
@@ -9,6 +14,12 @@ Brightness = 100
 # Changeable variables
 
 DebugMode = True
+
+#only two expressions are currently implemented
+#Expression_list = [Happy , Blush]
+
+CurrentExpression = "Happy"
+PreviousExpression = "anything other than current Expression"
 
 Index = 0
 
@@ -24,6 +35,6 @@ Refresh_Hertz_Cap = 200
 Global_Nano_Seconds = 50
 
 #Images and gifs
-
-TransColorMap = imread("Traaaaaans.png")
-MovingColorMap = VideoCapture('WHOH1.gif')
+#print(path.append(join(current_dir, "Traaaaaans.png")))
+#TransColorMap = imread(join(current_dir, "Color_Maps\\Traaaaaans.png"))
+MovingColorMap = VideoCapture(join(current_dir, "Color_Maps\\WHOH1.gif"))
