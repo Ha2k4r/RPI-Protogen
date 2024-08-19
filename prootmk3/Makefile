@@ -1,7 +1,7 @@
 CFLAGS=-Wall -O3 -g -Wextra -Wno-unused-parameter
 CXXFLAGS=$(CFLAGS)
-OBJECTS=image-example.o main.o
-BINARIES=image-example
+OBJECTS=Matrix_Drw.o main.o
+BINARIES=proot
 
 # Where our library resides. You mostly only need to change the
 # RGB_LIB_DISTRIBUTION, this is where the library is checked out.
@@ -21,8 +21,8 @@ all: $(BINARIES)
 $(RGB_LIBRARY): FORCE
 	$(MAKE) -C $(RGB_LIBDIR)
 
-image-example: $(OBJECTS) $(RGB_LIBRARY)
-	$(CXX) $(OBJECTS) -o image-example $(LDFLAGS) $(OPENCV_LDFLAGS)
+proot: $(OBJECTS) $(RGB_LIBRARY)
+	$(CXX) $(OBJECTS) -o proot $(LDFLAGS) $(OPENCV_LDFLAGS)
 
 %.o: %.cc
 	$(CXX) -I$(RGB_INCDIR) $(CXXFLAGS) $(OPENCV_CXXFLAGS) -c -o $@ $<
