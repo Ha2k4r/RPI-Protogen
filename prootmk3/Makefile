@@ -1,6 +1,6 @@
 CFLAGS=-Wall -O3 -g -Wextra -Wno-unused-parameter
 CXXFLAGS=$(CFLAGS)
-OBJECTS=Matrix_Drw.o main.o
+OBJECTS=Matrix_Drw.o main.o expression-vectors.o PathCalculator.o
 BINARIES=proot
 
 # Where our library resides. You mostly only need to change the
