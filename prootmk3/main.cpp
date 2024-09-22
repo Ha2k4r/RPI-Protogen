@@ -1,9 +1,19 @@
 #include <string>
 #include "led-matrix.h"
+#include "expression-vectors.hpp"
+#include <chrono>
 #include <unistd.h>
 #include <opencv2/opencv.hpp>
-#include <chrono>
+#include <vector>
+#include <iostream>
+#include <thread>
+#include <mutex>
+#include <string>
+#include <boost/asio.hpp>
+#include "serialport.hpp"
+#include "buffer.hpp"
 
+//#include "PathCalculator.cpp"
 //screen stoof
 using rgb_matrix::RGBMatrix;
 using rgb_matrix::FrameCanvas;
@@ -12,7 +22,6 @@ RGBMatrix* InitializeMatrix();
 void DisplayImage(RGBMatrix* matrix, const cv::Mat &image );
 cv::Point* BezierCurveCalculation(const cv::Point* Array,const cv::Point* Target_Array, int num_points,int arraysize, double factor1 = 0.5 , double factor2 = 1.8 );
 const cv::Point* UnpackBezierArray( int Index, cv::Point* RawBezierArray, int numpoints, int maxindex);
-
 struct timeValues {
   // holds the time of the last action in place so math arround it can happen
   std::chrono::time_point<std::chrono::steady_clock> action_time;
@@ -63,18 +72,20 @@ int main() {
   struct timeValues blinkSpeed;
   struct timeValues noseUpdate;
   struct timeValues mouthUpdate;
+  Buffer b("/dev/ttyACM0", 9600);
+//  struct timeValues serialRead;
   //user changeable variables
 
   int blink_Cycles = 30;
-  bakrndUpdate.wait_time = 0.042;
+  bakrndUpdate.wait_time = 0.042; // TODO: this needs a comment lol????
   timeBetweenBlink.wait_time = 10;
   blinkSpeed.wait_time = 0.01;
-  noseUpdate.wait_time = 1000;
-  mouthUpdate.wait_time = 1000;
+  noseUpdate.wait_time = 100;
+  mouthUpdate.wait_time = 100;
+ // serialRead.wait_time = 0.1;
   //hardcoded thingies
   struct color_map BluePinkLR("color_maps/WHOH1.gif");
   //var declarations
-  cv::Mat frame;
   cv::Mat bakrnd_frame;
   bool Change= false;
   bool Blinking=false;
@@ -83,23 +94,24 @@ int main() {
   //start the matrix and create a object for it
   RGBMatrix* matrix = InitializeMatrix();
   // Create a binary mask 
-  cv::Mat EyeSprite = cv::Mat::zeros(cv::Size(64, 32), CV_8UC1);
+  cv::Mat EyeSprite = cv::Mat::zeros(cv::Size(64, 32), CV_8UC1); // TODO: yayyy i love magic numbers
   cv::Mat NoseSprite = cv::Mat::zeros(cv::Size(64, 32), CV_8UC1);
   cv::Mat MouthSprite = cv::Mat::zeros(cv::Size(64, 32), CV_8UC1);
   cv::Mat sprite_canvas = cv::Mat::zeros(cv::Size(64, 32), CV_8UC1);
-  extern cv::Point NoseHappyArray[10];
-  extern cv::Point EyeClosedHappyArray[9];
-  extern cv::Point EyeHappyArray[9];
-  extern cv::Point MouthHappyArray[14];
+        
+
+  const int numPointsEye[]   = { 9 };
+  const int numPointsMouth[] = { 14 };
+  const int numPointsNose[]  = { 10 };
 
   morm.DEFAULT[0] = MouthHappyArray;
   norm.DEFAULT[0] = NoseHappyArray;
   Happy.CLOSED[0] = EyeClosedHappyArray;
   Happy.DEFAULT[0] = EyeHappyArray;
   int arraySize = 9;
-  const int numPoints[] = { 9 };
-  const int numPointsMouth[] = { 14 };
-  const int numPointsNose[] = { 10 };
+
+
+  
   //*********************************************************************MAIN LOOP************ */
 while (true){ 
     cv::Point* RawBezierEye; // Initialize to nullptr
@@ -130,10 +142,6 @@ while (true){
                 else {
                     delete[] RawBezierEye;
                     RawBezierEye = BezierCurveCalculation(Happy.CLOSED[0], Happy.DEFAULT[0], blink_Cycles, arraySize);
-                    if (RawBezierEye == nullptr){
-                      std::cerr << "NULL VALUE ERROR 2 " << std::endl;
-                      return 1;
-                    }
                     n = 0;
                     eyeOpening = false;
                 }
@@ -155,12 +163,8 @@ while (true){
             
             int Sizeof_RawBezierEye = arraySize * blink_Cycles;
             EyeSprite = cv::Mat::zeros(cv::Size(64, 32), CV_8UC1);
-            if (RawBezierEye == nullptr){
-              std::cerr << "NULL VALUE ERROR 3 " << std::endl;
-              return 1;
-            }
             EyeVerticies = UnpackBezierArray(n, RawBezierEye, blink_Cycles, Sizeof_RawBezierEye);
-            cv::fillPoly(EyeSprite, &EyeVerticies, numPoints, 1, cv::Scalar(255, 255, 255), cv::LINE_8);
+            cv::fillPoly(EyeSprite, &EyeVerticies, numPointsEye, 1, cv::Scalar(255, 255, 255), cv::LINE_8);
             blinkSpeed.action_time = std::chrono::steady_clock::now();
             Change = true;
             delete[] EyeVerticies; 
@@ -171,17 +175,9 @@ while (true){
         n = 0;
         int Sizeof_RawBezierEye = (arraySize * blink_Cycles) * 8;
         RawBezierEye = BezierCurveCalculation(Happy.DEFAULT[0], Happy.CLOSED[0], blink_Cycles, arraySize);
-        if (RawBezierEye == nullptr){
-          std::cerr << "NULL VALUE ERROR:bezier curve calculation " << std::endl;
-          return 1;
-        }
         EyeVerticies = UnpackBezierArray(n, RawBezierEye, blink_Cycles, Sizeof_RawBezierEye);
-        if (EyeVerticies == nullptr){
-          std::cerr << "NULL VALUE ERROR unpack eyeverticies " << std::endl;
-          return 1;
-        }
         EyeSprite = cv::Mat::zeros(cv::Size(64, 32), CV_8UC1);
-        cv::fillPoly(EyeSprite, &EyeVerticies, numPoints, 1, cv::Scalar(255, 255, 255), cv::LINE_8);
+        cv::fillPoly(EyeSprite, &EyeVerticies, numPointsEye, 1, cv::Scalar(255, 255, 255), cv::LINE_8);
         timeBetweenBlink.action_time = std::chrono::steady_clock::now();
         Change = true;
         //delete[] EyeVerticies;
@@ -198,15 +194,38 @@ while (true){
       MouthSprite = cv::Mat::zeros(cv::Size(64, 32), CV_8UC1);
       cv::fillPoly(MouthSprite, &morm.DEFAULT[0], numPointsMouth, 1, cv::Scalar(255, 255, 255), cv::LINE_8);
     }
+        auto returned = b.readBuf();
+        if (returned.empty()) {
+          //std::cout << "null ptr" << std::endl;
+        }
+        else {
+          for (std::pair<fullDescriptor, int16_t>& i : returned){
+            fullDescriptor name = std::get<0>(i);
+            int16_t value = std::get<1>(i);
+          }
+        }
+        /*
+        // Check if serial data has changed and use it as needed
+        // Check if the read data is valid (e.g., no default/invalid values)
+        if (returned[0] == -1 || returned[1] == -1 || returned[2] == -1) {
 
-  // if the frame is different than the last frame, update the frame
+        } else {
+            //std::cout << "Received values: " << returned[0] << std::endl;
+            matrix->SetBrightness(returned[0]);
+        
+    }
+    */
   if (Change==true) {
     // Apply the mask to the image using the bitwise_and operation
-    frame = cv::Mat::zeros(cv::Size(64, 32), CV_8UC1);
+    cv::Mat RightFrame = cv::Mat::zeros(cv::Size(64, 32), CV_8UC1);
+    cv::Mat Left_Frame = cv::Mat::zeros(cv::Size(64, 32), CV_8UC1);
+    cv::Mat FULLSCREEN = cv::Mat::zeros(cv::Size(128, 32), CV_8UC1);
     cv::add(NoseSprite, EyeSprite, sprite_canvas);
     cv::add(sprite_canvas, MouthSprite, sprite_canvas);
-    cv::bitwise_and(bakrnd_frame, bakrnd_frame, frame, sprite_canvas);
-    DisplayImage(matrix, frame);
+    cv::bitwise_and(bakrnd_frame, bakrnd_frame, RightFrame, sprite_canvas);
+    cv::flip(RightFrame, Left_Frame, 1 );
+    cv::hconcat(RightFrame, Left_Frame, FULLSCREEN);
+    DisplayImage(matrix, FULLSCREEN);
     Change=false;
   }
   }
@@ -214,3 +233,4 @@ while (true){
   delete matrix;
   return 0;
 }
+
