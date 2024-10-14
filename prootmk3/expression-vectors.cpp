@@ -2,7 +2,7 @@
 
 //std::vector EyeHappyArray 
 
-cv::Point EyeHappyArray[9] = {
+std::vector<cv::Point> EyeHappyArray = {
     cv::Point(0, 4), // far Left
     cv::Point(6, 5),
     cv::Point(11, 5),
@@ -14,7 +14,7 @@ cv::Point EyeHappyArray[9] = {
     cv::Point(12, 0)  // top left on top of the angle
 };
 
-cv::Point EyeClosedHappyArray[9] = {
+std::vector<cv::Point> EyeClosedHappyArray = {
     cv::Point(0,  1),  // far Left
     cv::Point(6,  1),
     cv::Point(11, 1),
@@ -25,7 +25,7 @@ cv::Point EyeClosedHappyArray[9] = {
     cv::Point(15, 0),
     cv::Point(12, 0)  // top left on top of the angle
 };
-cv::Point MouthHappyArray[14] = {
+std::vector<cv::Point> MouthHappyArray = {
     cv::Point(14, 19),
     cv::Point(32, 29),
     cv::Point(45, 23),
@@ -43,7 +43,7 @@ cv::Point MouthHappyArray[14] = {
 
 };
 
-cv::Point NoseHappyArray[10] = {
+std::vector<cv::Point> NoseHappyArray = {
     // counterclockwise
     cv::Point(63, 10),  // bottom of nose
     cv::Point(63, 6),
@@ -58,17 +58,17 @@ cv::Point NoseHappyArray[10] = {
 
 };
 //unused as of here and down but will be used eventually
-cv::Point BlushStripe1[2] = {
+std::vector<cv::Point> BlushStripe1 = {
     cv::Point(3, 10),  // far Left
     cv::Point(7, 16)
 };
 
-cv::Point BlushStripe2[2] = {
+std::vector<cv::Point> BlushStripe2 = {
     cv::Point(6, 9),  // far Left
     cv::Point(10, 15)
 };
 
-cv::Point BlushStripe3[2] = {
+std::vector<cv::Point> BlushStripe3 = {
     cv::Point(11, 10),  // far Left
     cv::Point(12, 14)
 };

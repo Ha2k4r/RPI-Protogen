@@ -1,7 +1,6 @@
 #include "serialport.hpp"
 #include <iostream>
-SerialPort::SerialPort(const std::string& port, unsigned int baud_rate)
-	: io(), serial(io, port) { // ?
+SerialPort::SerialPort(const std::string& port, unsigned int baud_rate) : io(), serial(io, port) { // ?
 	serial.set_option(boost::asio::serial_port_base::baud_rate(baud_rate)); 
 	// initialize array
 	serialData = { -1, -1, -1 };
@@ -46,7 +45,7 @@ void SerialPort::ReadSerial() {
         }
 
     } catch (boost::system::system_error& e) {
-        std::cerr << "Error: " << e.what() << std::endl;
+        std::cerr << "Serial Error: " << e.what() << std::endl;
     }
     Update();
 }
