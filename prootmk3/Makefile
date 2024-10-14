@@ -1,5 +1,5 @@
 CFLAGS=-Wall -O3 -g -Wextra -Wno-unused-parameter
-CXXFLAGS=$(CFLAGS) -w
+CXXFLAGS=$(CFLAGS) -w -g
 OBJECTS=$(addsuffix .o,$(addprefix build/, $(notdir $(basename $(wildcard *.cpp)))))
 BINARIES=proot
 

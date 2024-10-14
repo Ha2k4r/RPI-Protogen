@@ -14,8 +14,7 @@ void Buffer::Update(){
     buffer[{serialData[0], serialData[1]}] = serialData[2]; // add the value to the map
 }
 
-Buffer::Buffer(const std::string& port, unsigned int baud_rate) 
-    : SerialPort(port, baud_rate){
+Buffer::Buffer(const std::string& port, unsigned int baud_rate) : SerialPort(port, baud_rate){
     StartAsyncThread();
 }
 
