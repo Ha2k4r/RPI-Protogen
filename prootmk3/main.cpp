@@ -13,21 +13,35 @@
 #include "serialport.hpp"
 #include "buffer.hpp"
 #include "spritemath.hpp"
-#include "config.hpp"
-
+#include "globals.hpp"
+#include <stdlib.h>
 
 using rgb_matrix::RGBMatrix;
 using rgb_matrix::FrameCanvas;
 RGBMatrix* InitializeMatrix();
+SpriteMath spritemath;
 void DisplayImage(RGBMatrix* matrix, const cv::Mat &image );
 
 int main() {
-  SpriteMath spritemath;
-  Buffer b("/dev/ttyACM0", 9600);
+  for (const std::string& port : Ports) {
+        try {
+            std::cout << "Trying port: " << port << std::endl;
+            // Attempt to initialize Buffer (assuming Buffer is your serial connection class)
+            Buffer b(port, 9600);
+            
+            std::cout << "Connected successfully to " << port << std::endl;
+            break;  // Exit the loop once a successful connection is made
+        } catch (...) {
+            std::cout << "FAIL: Could not connect to " << port << std::endl;
+            if (port == Ports[Ports.size()-1]){
+              std::cout << "\n ERROR, SerialPort not detected and all functionality is now DISABLED. \n";
+            }
+        }
+    }
   //var declarations
   cv::Mat bakrnd_frame;
 
-  short n=0;
+  static short n=0;
   //start the matrix and create a object for it
   RGBMatrix* matrix = InitializeMatrix();
   // Create a binary mask 
@@ -35,7 +49,7 @@ int main() {
 
 while (true){ 
     //TODO: Preprocess the gif to reduce the insane processing power required for this to work
-    //TODO: obvuscate this whole process behind more .cpp files
+    //TODO: obvuscate this whole process behind more .hpp files
     // Gif reader logic for background image
     bakrndUpdate.elapsed_time = std::chrono::steady_clock::now() - bakrndUpdate.action_time;
 
@@ -56,6 +70,19 @@ while (true){
     spritemath.MouthUpdate();
 
     spritemath.NoseUpdate();
+  /*
+    auto returned = b.readBuf();
+    if (returned.empty()) {
+      //std::cout << "null ptr" << std::endl;
+    }
+    else {
+      for (std::pair<fullDescriptor, int16_t>& i : returned){
+        fullDescriptor name = std::get<0>(i);
+        int16_t value = std::get<1>(i);
+        matrix->SetBrightness(value);
+        std::cout << "Value : " << value << std::endl;
+      }
+    }*/
 
     if (Change==true) {
       //TODO: Obvuscate this whole process
