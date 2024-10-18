@@ -1,5 +1,5 @@
-#ifndef CONFIG_HPP
-#define CONFIG_HPP
+#ifndef GLOBALS_HPP
+#define GLOBALS_HPP
 #include <chrono>
 #include <opencv2/opencv.hpp>
 #include "expression-vectors.hpp"
@@ -56,7 +56,6 @@ extern color_map BluePinkLR;
 extern bool Blinking;
 extern bool Change;
 extern bool eyeOpening; 
-extern int arraySize;
 extern int n;
 extern int blink_Cycles;
 
