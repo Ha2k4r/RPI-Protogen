@@ -9,7 +9,7 @@ void SpriteMath::EyeUpdate(){
                     n++;
                 }
                 else {
-                    RawBezierEye = Calculate_Many_Bezier_Curves(Happy.CLOSED, Happy.DEFAULT, blink_Cycles, arraySize);
+                    RawBezierEye = Calculate_Many_Bezier_Curves(Happy.CLOSED, Happy.DEFAULT, blink_Cycles);
                     n = 0;
                     eyeOpening = false;
                 }
@@ -27,9 +27,8 @@ void SpriteMath::EyeUpdate(){
                 }
             }
             
-            int Sizeof_RawBezierEye = arraySize * blink_Cycles;
             EyeSprite = cv::Mat::zeros(cv::Size(64, 32), CV_8UC1);
-            EyeVerticies = UnpackBezierArray(n, RawBezierEye, blink_Cycles, Sizeof_RawBezierEye);
+            EyeVerticies = UnpackBezierArray(n, RawBezierEye, blink_Cycles);
             const cv::Point* ArrayEyeVerticies = &EyeVerticies[0];
             cv::fillPoly( EyeSprite, &ArrayEyeVerticies, numPointsEye, 1, cv::Scalar(255, 255, 255), cv::LINE_8);
             blinkSpeed.action_time = std::chrono::steady_clock::now();
@@ -39,9 +38,8 @@ void SpriteMath::EyeUpdate(){
     else if (timeBetweenBlink.elapsed_time.count() >= timeBetweenBlink.wait_time)
     {
         n = 0;
-        int Sizeof_RawBezierEye = (arraySize * blink_Cycles) * 8;
-        RawBezierEye = Calculate_Many_Bezier_Curves(Happy.DEFAULT, Happy.CLOSED, blink_Cycles, arraySize);
-        EyeVerticies = UnpackBezierArray(n, RawBezierEye, blink_Cycles, Sizeof_RawBezierEye);
+        RawBezierEye = Calculate_Many_Bezier_Curves(Happy.DEFAULT, Happy.CLOSED, blink_Cycles);
+        EyeVerticies = UnpackBezierArray(n, RawBezierEye, blink_Cycles);
         EyeSprite = cv::Mat::zeros(cv::Size(64, 32), CV_8UC1);
         const cv::Point* ArrayEyeVerticies = &EyeVerticies[0];
         cv::fillPoly(EyeSprite, &ArrayEyeVerticies, numPointsEye, 1, cv::Scalar(255, 255, 255), cv::LINE_8);
