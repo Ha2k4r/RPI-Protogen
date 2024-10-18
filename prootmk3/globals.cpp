@@ -1,4 +1,4 @@
-#include "config.hpp"
+#include "globals.hpp"
 
 timeValues bakrndUpdate = {std::chrono::steady_clock::time_point{}, 0.042, std::chrono::duration<double>(0)};
 timeValues timeBetweenBlink = {std::chrono::steady_clock::time_point{}, 10, std::chrono::duration<double>(0)};
@@ -15,7 +15,6 @@ color_map BluePinkLR("color_maps/WHOH1.gif");
 bool Blinking = false;
 bool Change = false;
 bool eyeOpening = true;
-int arraySize = 9;
 int n = 0;
 int blink_Cycles = 20;
 
