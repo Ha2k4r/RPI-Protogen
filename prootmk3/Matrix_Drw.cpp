@@ -1,4 +1,5 @@
 #include "led-matrix.h"
+#include "spritemath.hpp"
 #include <opencv2/opencv.hpp>
 #include <string>
 #include <stdio.h>
@@ -51,13 +52,23 @@ RGBMatrix* InitializeMatrix() {
   return matrix;
 }
 
-void DisplayImage(RGBMatrix* matrix, const cv::Mat &image) {
-  if (image.empty()) {
+void DisplayImage(RGBMatrix* matrix, SpriteMath& spritemath) {
+  if (spritemath.InUseColorMap.empty() && spritemath.InUseSprites.empty()) {
     fprintf(stderr, "Failed to load image.\n");
     return;
   }
+  cv::Mat SpriteCanvas = cv::Mat::zeros(cv::Size(64, 32), CV_8UC1);
+  cv::Mat Left_Frame = cv::Mat::zeros(cv::Size(64, 32), CV_8UC1);
+  cv::Mat RightFrame = cv::Mat::zeros(cv::Size(64, 32), CV_8UC1);
+  cv::Mat FULLSCREEN = cv::Mat::zeros(cv::Size(128, 32), CV_8UC1);
+  for (auto const& [key, val] : spritemath.InUseSprites){
+    cv::add(val, SpriteCanvas, SpriteCanvas);
+    }
+  cv::bitwise_and(spritemath.InUseColorMap, spritemath.InUseColorMap, RightFrame, SpriteCanvas);
+  cv::flip(RightFrame, Left_Frame, 1 );
+  cv::hconcat(RightFrame, Left_Frame, FULLSCREEN);
   
-  CopyImageToCanvas(image, offscreen_canvas);
+  CopyImageToCanvas(FULLSCREEN, offscreen_canvas);
   offscreen_canvas = matrix->SwapOnVSync(offscreen_canvas);
   offscreen_canvas -> Clear();
 }
