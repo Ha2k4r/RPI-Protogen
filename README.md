@@ -31,7 +31,8 @@ This project leverages powerful libraries and frameworks to handle image process
 
 2. Install dependencies:  
    ```bash
-   sudo apt update  
+   sudo apt update
+   sudo apt upgrade
    sudo apt install libopencv-dev python3-opencv  
    sudo apt-get install libboost-all-dev
    ```
