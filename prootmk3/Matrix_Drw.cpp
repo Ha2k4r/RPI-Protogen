@@ -33,17 +33,16 @@ RGBMatrix* InitializeMatrix() {
   rgb_matrix::RuntimeOptions runtime_opt;
   RGBMatrix::Options options;
 
-  options.pwm_lsb_nanoseconds = 60;
-  //options.show_refresh_rate = true;
-  //options.limit_refresh_rate_hz = 100;
-  //options.disable_hardware_pulsing = false;
+  options.pwm_lsb_nanoseconds = 300;
+  options.show_refresh_rate = false;
+  //options.limit_refresh_rate_hz = 300;
+  options.disable_hardware_pulsing=false;
   options.rows = 32;
   options.cols = 64;
   options.chain_length = 2;
   options.hardware_mapping = "adafruit-hat-pwm";
-
   runtime_opt.gpio_slowdown = 4;
-
+  //runtime_opt.drop_privileges = -1; 
   RGBMatrix* matrix = RGBMatrix::CreateFromOptions(options, runtime_opt);
   if (matrix == NULL) {
     fprintf(stderr, "Failed to initialize matrix.\n");

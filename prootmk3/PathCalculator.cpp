@@ -49,9 +49,7 @@ std::vector<cv::Point> UnpackBezierArray(int Index, std::vector<cv::Point> RawBe
     for (int i = 0; i < maxindex; i++) {
         int target = (numpoints * i) + Index;
         Geometric_Vertices[i] = RawBezierArray[target];
+        //std::cout << "Geometric Verticies   : " << Geometric_Vertices[i] << std::endl;
     }
-    return Geometric_Vertices;
-}
-
     return Geometric_Vertices;
 }
