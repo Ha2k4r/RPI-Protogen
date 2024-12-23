@@ -58,6 +58,20 @@ std::vector<cv::Point> NoseHappyArray = {
 
 };
 //unused as of here and down but will be used eventually
+
+std::vector<cv::Point> BlushEye{
+    cv::Point(0, 5),  // far Left
+    cv::Point(3, 8),
+    cv::Point(13, 5),
+    cv::Point(18, 5),
+    cv::Point(23, 8),
+    cv::Point(24, 8),
+    cv::Point(23, 3),
+    cv::Point(19, 1),
+    cv::Point(13, 1),
+    cv::Point(8, 4)  // top left on top of the angle
+};
+
 std::vector<cv::Point> BlushStripe1 = {
     cv::Point(3, 10),  // far Left
     cv::Point(7, 16)

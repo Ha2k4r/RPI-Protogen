@@ -14,11 +14,11 @@ Expression::Expression_sprite::Expression_sprite(
       action_time2(std::chrono::steady_clock::time_point{}),
       elapsed_time2(std::chrono::duration<double>(0)),
       //Type of sprite specifyers   
-      NeedBezier(Params.NeedBezier)   //const std::string& video_path
+      ExpressionType(Params.ExpressionType)   //const std::string& video_path
 {}
 Expression::Colormap::Colormap(const Expression_Params& Params) : 
   video(Params.MediaPath), 
-  isGif(Params.isGif),
+  ExpressionType(Params.ExpressionType),
   wait_time(Params.wait_time),
 
     //THESE SHOULD NEVER CHANGE

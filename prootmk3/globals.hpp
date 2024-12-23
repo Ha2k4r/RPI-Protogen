@@ -13,10 +13,9 @@ struct Expression_Params {
   const std::vector<cv::Point>& MainChords = {};
   const std::vector<cv::Point>& OposingChords = {};
   
-  const bool& NeedBezier = false;
+  const int ExpressionType = -1;
   const double wait_time2 = 253;
   //ColorMap Specific items
-  const bool& isGif = true;
   const std::string& MediaPath = "";
   
 };
@@ -44,7 +43,7 @@ public:
         //will use a bezier curve calculation to go to a setpoint, therby needing oposing chords as the setpoint
         //usefull for eye blinking, animations or cool transitions 
         //usually as transitions happen the updates should be faster so it switches to waitime2
-        const bool NeedBezier;
+        const int ExpressionType;
         bool IsUpdateTime();
         bool IsUpdateTime2();
         //below are only used by functions
@@ -66,7 +65,7 @@ public:
         const double wait_time;
         std::chrono::duration<double> elapsed_time;
       public: 
-        const bool isGif;
+        const int ExpressionType;
         cv::VideoCapture video;
         unsigned int TOTAL_FRAMES;
         std::string location;
