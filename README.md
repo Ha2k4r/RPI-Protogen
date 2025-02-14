@@ -97,7 +97,7 @@ This project wouldn't be possible without these incredible libraries and tools:
 - To the **furry community** and **individual fursuit makers** for inspiring me so much to persue all of this.
   special thanks to :
   * [@Jting-F](https://www.youtube.com/@jting-f3237) for the *buetifull* and incredibly complicated Protogen design that inspired me to make my own!
-  * [@WafflesDoesArt](https://linktr.ee/wafflesdoesart) for their amazing discord community and Fantastic work on their own designs!
+  * [@WafflesDoesArt](https://linktr.ee/wafflesdoesart) for their amazing discord community and Fantastic work on their own designs with a toutorial that sent me on this spiral!
   * My friends who contributed in small but meaningfull ways!
   * **YOU** a potential user of *this* software! thank you, keep being great and have a *great* day!
   
