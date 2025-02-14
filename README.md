@@ -7,7 +7,7 @@
 ### 📜 **FEATURES**
 - **Real-Time Rendering:** Converts vector graphics into pixel-perfect displays on an RGB matrix.  
 - **Open Source:** Licensed under the **MIT License WITH ATTRIBUTION CLAUSE** for freedom to use, copy, modify, merge, publish, and distribute.  
-- **Raspberry Pi Basis:** Designed for the Raspberry Pi, with plans to fully leverage this Arguably overkill hardware.
+- **Raspberry Pi Basis:** Designed for the Raspberry Pi, with plans to fully utilize this Arguably overkill hardware.
 
 ---
 
@@ -39,6 +39,7 @@ This project leverages powerful libraries and frameworks to handle image process
 
 3. Build the project using `make`:  
    ```bash
+   mkdir build
    sudo make
    ```
 
@@ -48,6 +49,14 @@ This project leverages powerful libraries and frameworks to handle image process
    ```
 
 ---
+
+## Hardware And Wireing 
+- This program will work with any raspberry pi with standard 3.3v gpio - *EXCEPT THE RASPBERRY PI 5*.
+
+- The screen is updated using Hzellers library, which can be modified for alternative wireing however the *Recomended* wireing is with a [Bonnet](https://www.adafruit.com/product/3211) with pins 4 and 8 shorted using a (preferably soldered) jumper wire to make use of pwm.
+
+- Each Matrix must be on a different Power line than the *RPI*'s gpio 5v as it cannot provide enough power. I recomend cutting a charger cables end and soldering the wire into the bonnets provided power input lines, and the USBA side should plug into the *RPI*'s Native USB. *Images provided in : [Wiring](https://github.com/Ha2k4r/RPI-Protogen/tree/main/Wiring)
+- Often these boards come with cables that have connectors crimped on. Cutting the ends on them and soldering them to a power source may be your best bet as it depends on your protogens screens power draw and desire for reliablity as the screens can easily draw 3.4 Amps of power. 
 
 ## 🧬 **HOW IT WORKS**
 1. **Vectors:** Accepts pre-made geometry for sprites.  
