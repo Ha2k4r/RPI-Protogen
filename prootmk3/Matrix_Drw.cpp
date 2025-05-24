@@ -37,7 +37,7 @@ RGBMatrix* InitializeMatrix() {
   //options.pwm_lsb_nanoseconds = 300;
   options.show_refresh_rate = false;
   //options.limit_refresh_rate_hz = 300;
-  //options.disable_hardware_pulsing=true;
+  options.disable_hardware_pulsing=true;
   options.rows = 32;
   options.cols = 64;
   options.chain_length = 2;
@@ -53,6 +53,10 @@ RGBMatrix* InitializeMatrix() {
 }
 
 void DisplayImage(RGBMatrix* matrix, SpriteMath& spritemath, bool debugmode) {
+
+  // This is such a poor way of doing this and can easily be fixed.
+  //NO REASON TO HAVE A IF STATEMENT EVERY DRAW
+
   cv::Mat SpriteCanvas = cv::Mat::zeros(cv::Size(64, 32), CV_8UC1);
   cv::Mat Left_Frame = cv::Mat::zeros(cv::Size(64, 32), CV_8UC1);
   cv::Mat RightFrame = cv::Mat::zeros(cv::Size(64, 32), CV_8UC1);
@@ -67,8 +71,10 @@ void DisplayImage(RGBMatrix* matrix, SpriteMath& spritemath, bool debugmode) {
   CopyImageToCanvas(FULLSCREEN, offscreen_canvas);
   offscreen_canvas = matrix->SwapOnVSync(offscreen_canvas);
   offscreen_canvas -> Clear();
+
   }
   else{ 
-  cv::imshow("Protogen Output", SpriteCanvas);
+  cv::imshow("Protogen Output", FULLSCREEN);
+  cv::waitKey(1);
   }
 }
