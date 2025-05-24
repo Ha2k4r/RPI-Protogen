@@ -23,14 +23,16 @@ RGBMatrix* InitializeMatrix();
 void DisplayImage(RGBMatrix* matrix, SpriteMath& spritemath, bool debugmode=false);
 
 SpriteMath spritemath;
-Expression Smile, Blush, Clock;
-
+Expression Smile;
+Expression Blush;
+Expression Clock;
 int main() {
   std::vector<Expression> Faces = { Smile , Blush, Clock};
   init(Faces);
+  static short n=0;
   //start the matrix and create a object for it
   RGBMatrix* matrix = InitializeMatrix();
-  Expression* SelectedFace = &Faces[2];
+  Expression* SelectedFace = &Faces[0];
 
 while (true){ 
 
@@ -40,6 +42,8 @@ while (true){
 
     if (Change==true) {
       //apply the mask to the image and display it to the screen
+      DisplayImage(matrix,spritemath, false);
+      Change=false;
     }
   }
   matrix->Clear();
