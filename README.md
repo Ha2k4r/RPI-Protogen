@@ -26,28 +26,32 @@ This project leverages powerful libraries and frameworks to handle image process
 1. Clone the repository:  
    ```bash
    git clone https://github.com/Ha2k4r/RPI-Protogen
-   cd RPI-Protogen/prootmk3
+   cd ~/RPI-Protogen/prootmk3/
    ```
 
 2. Install dependencies:  
    ```bash
-   sudo apt update
-   sudo apt upgrade
+   sudo apt update && sudo apt upgrade
    sudo apt install libopencv-dev python3-opencv  
    sudo apt-get install libboost-all-dev
    ```
 
 3. Build the project using `make`:  
+   - Make the hzeller/rpi-rgb-led-matrix Library
    ```bash
+   cd ~/RPI-Protogen/prootmk3/lib
+   make 
+   ```
+   ```bash
+   cd ~/RPI-Protogen/prootmk3/
    mkdir build
-   sudo make
+   make
    ```
 
-4. Run the application:  
+5. Run the application:  
    ```bash
    sudo ./proot
    ```
-
 ---
 
 ## Hardware And Wireing 
