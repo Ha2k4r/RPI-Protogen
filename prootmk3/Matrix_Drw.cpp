@@ -4,7 +4,7 @@
 #include <string>
 #include <stdio.h>
 #include <unistd.h>
-
+#include "Config.hpp"
 using rgb_matrix::Canvas;
 using rgb_matrix::RGBMatrix;
 using rgb_matrix::FrameCanvas;
@@ -52,11 +52,9 @@ RGBMatrix* InitializeMatrix() {
   return matrix;
 }
 
-void DisplayImage(RGBMatrix* matrix, SpriteMath& spritemath, bool debugmode) {
-
-  // This is such a poor way of doing this and can easily be fixed.
-  //NO REASON TO HAVE A IF STATEMENT EVERY DRAW
-
+#ifndef TESTING_ENVIRONMENT
+void DisplayImage(SpriteMath& spritemath) {
+  
   cv::Mat SpriteCanvas = cv::Mat::zeros(cv::Size(64, 32), CV_8UC1);
   cv::Mat Left_Frame = cv::Mat::zeros(cv::Size(64, 32), CV_8UC1);
   cv::Mat RightFrame = cv::Mat::zeros(cv::Size(64, 32), CV_8UC1);
@@ -67,14 +65,26 @@ void DisplayImage(RGBMatrix* matrix, SpriteMath& spritemath, bool debugmode) {
   cv::bitwise_and(spritemath.InUseColorMap, spritemath.InUseColorMap, RightFrame, SpriteCanvas);
   cv::flip(RightFrame, Left_Frame, 1 );    
   cv::hconcat(RightFrame, Left_Frame, FULLSCREEN);
-  if(!debugmode){
-  CopyImageToCanvas(FULLSCREEN, offscreen_canvas);
-  offscreen_canvas = matrix->SwapOnVSync(offscreen_canvas);
-  offscreen_canvas -> Clear();
-
-  }
-  else{ 
+  
+    // CopyImageToCanvas(FULLSCREEN, offscreen_canvas);
+    // offscreen_canvas = matrix->SwapOnVSync(offscreen_canvas);
+    // offscreen_canvas -> Clear();
+}
+#else
+void DisplayImage(SpriteMath& spritemath) {
+  
+  cv::Mat SpriteCanvas = cv::Mat::zeros(cv::Size(64, 32), CV_8UC1);
+  cv::Mat Left_Frame = cv::Mat::zeros(cv::Size(64, 32), CV_8UC1);
+  cv::Mat RightFrame = cv::Mat::zeros(cv::Size(64, 32), CV_8UC1);
+  cv::Mat FULLSCREEN = cv::Mat::zeros(cv::Size(128, 32), CV_8UC1);
+  for (auto const& [key, val] : spritemath.InUseSprites){
+    cv::add(val, SpriteCanvas, SpriteCanvas);
+    }
+  cv::bitwise_and(spritemath.InUseColorMap, spritemath.InUseColorMap, RightFrame, SpriteCanvas);
+  cv::flip(RightFrame, Left_Frame, 1 );    
+  cv::hconcat(RightFrame, Left_Frame, FULLSCREEN);
+  cv::resize(FULLSCREEN,FULLSCREEN,cv::Size(FULLSCREEN.cols*10,FULLSCREEN.rows * 10), 0 , 0 , cv::INTER_LINEAR);
   cv::imshow("Protogen Output", FULLSCREEN);
   cv::waitKey(1);
-  }
 }
+#endif

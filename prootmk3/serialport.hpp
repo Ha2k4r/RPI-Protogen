@@ -19,7 +19,7 @@ public:
     virtual void Update();
     
 protected:
-    boost::asio::io_service io;
+    boost::asio::io_context io;
     boost::asio::serial_port serial;
     std::mutex serialDataMutex;
     std::vector<int16_t> serialData;

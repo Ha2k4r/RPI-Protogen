@@ -10,19 +10,23 @@
 #include <mutex>
 #include <string>
 #include <boost/asio.hpp>
-#include "serialport.hpp"
+//#include "serialport.hpp"
 #include "buffer.hpp"
 #include "spritemath.hpp"
 #include "globals.hpp"
 #include "Setup.hpp"
 #include <stdlib.h>
 
-using rgb_matrix::RGBMatrix;
-using rgb_matrix::FrameCanvas;
-RGBMatrix* InitializeMatrix();
-void DisplayImage(RGBMatrix* matrix, SpriteMath& spritemath, bool debugmode=false);
-
 SpriteMath spritemath;
+#include "Config.hpp"
+#ifndef TESTING_ENVIRONMENT
+  using rgb_matrix::RGBMatrix;
+  using rgb_matrix::FrameCanvas;
+  RGBMatrix* InitializeMatrix();
+  void DisplayImage(SpriteMath& spritemath, RGBMatrix* matrix);
+#else 
+void DisplayImage(SpriteMath& SpriteMath);
+#endif 
 Expression Smile;
 Expression Blush;
 Expression Clock;
@@ -31,7 +35,9 @@ int main() {
   init(Faces);
   static short n=0;
   //start the matrix and create a object for it
+  #ifndef TESTING_ENVIRONMENT 
   RGBMatrix* matrix = InitializeMatrix();
+  #endif
   Expression* SelectedFace = &Faces[0];
 
 while (true){ 
@@ -42,11 +48,13 @@ while (true){
 
     if (Change==true) {
       //apply the mask to the image and display it to the screen
-      DisplayImage(matrix,spritemath, false);
+      DisplayImage(spritemath);
       Change=false;
     }
   }
+  #ifndef TESTING_ENVIRONMENT 
   matrix->Clear();
   delete matrix;
+  #endif
   return 0;
 }
