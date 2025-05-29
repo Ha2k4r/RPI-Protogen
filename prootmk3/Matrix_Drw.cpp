@@ -53,8 +53,8 @@ RGBMatrix* InitializeMatrix() {
 }
 
 #ifndef TESTING_ENVIRONMENT
-void DisplayImage(SpriteMath& spritemath) {
-  
+void DisplayImage(SpriteMath& spritemath, RGBMatrix* matrix) {
+
   cv::Mat SpriteCanvas = cv::Mat::zeros(cv::Size(64, 32), CV_8UC1);
   cv::Mat Left_Frame = cv::Mat::zeros(cv::Size(64, 32), CV_8UC1);
   cv::Mat RightFrame = cv::Mat::zeros(cv::Size(64, 32), CV_8UC1);
@@ -65,14 +65,14 @@ void DisplayImage(SpriteMath& spritemath) {
   cv::bitwise_and(spritemath.InUseColorMap, spritemath.InUseColorMap, RightFrame, SpriteCanvas);
   cv::flip(RightFrame, Left_Frame, 1 );    
   cv::hconcat(RightFrame, Left_Frame, FULLSCREEN);
-  
-    // CopyImageToCanvas(FULLSCREEN, offscreen_canvas);
-    // offscreen_canvas = matrix->SwapOnVSync(offscreen_canvas);
-    // offscreen_canvas -> Clear();
+
+  CopyImageToCanvas(FULLSCREEN, offscreen_canvas);
+  offscreen_canvas = matrix->SwapOnVSync(offscreen_canvas);
+  offscreen_canvas -> Clear();
 }
 #else
 void DisplayImage(SpriteMath& spritemath) {
-  
+
   cv::Mat SpriteCanvas = cv::Mat::zeros(cv::Size(64, 32), CV_8UC1);
   cv::Mat Left_Frame = cv::Mat::zeros(cv::Size(64, 32), CV_8UC1);
   cv::Mat RightFrame = cv::Mat::zeros(cv::Size(64, 32), CV_8UC1);
@@ -88,3 +88,4 @@ void DisplayImage(SpriteMath& spritemath) {
   cv::waitKey(1);
 }
 #endif
+
