@@ -1,5 +1,7 @@
 #include "spritemath.hpp"
 
+bool SpriteMath::Change_ = false;
+
 void SpriteMath::SpriteUpdate(Expression& FaceSprites){
     for (Expression::Expression_sprite& sprite : FaceSprites.Sprites){
         //Animation Logic, in this implementation its only for a eyeblinking
@@ -47,7 +49,7 @@ void SpriteMath::SpriteUpdate(Expression& FaceSprites){
                         const cv::Point* NumberOfChords = &SpriteGeomatry[0];
                         cv::fillPoly(TempSprite, &NumberOfChords, numPoints , 1, cv::Scalar(255, 255, 255), cv::LINE_8);
                         InUseSprites[sprite.UNIQUE_IDENTIFYER] = TempSprite;
-                        Change = true; 
+                        Change_= true; 
                     } else { 
                         continue;
                     }
@@ -62,7 +64,7 @@ void SpriteMath::SpriteUpdate(Expression& FaceSprites){
                         const int numPoints[] = { static_cast<int>(sprite.MainChords.size()) };
                         cv::fillPoly(TempSprite, &NumberOfChords, numPoints, 1, cv::Scalar(255, 255, 255), cv::LINE_8);
                         InUseSprites[sprite.UNIQUE_IDENTIFYER] = TempSprite;
-                        Change = true; 
+                        Change_= true; 
                         sprite.ActiveAnimation = true; 
                     }
                 break;
@@ -85,7 +87,7 @@ void SpriteMath::SpriteUpdate(Expression& FaceSprites){
 void SpriteMath::SpriteColorMapUpdate(Expression& FaceSprites){
     
     if(FaceSprites.ColorMap[0].IsUpdateTime()==true){
-        Change=true;
+        Change_ =true;
             cv::Mat bakrnd_frame = cv::Mat::zeros(cv::Size(64, 32), CV_8UC1);
             int CurrentFrame = static_cast<int>(FaceSprites.ColorMap[0].video.get(cv::CAP_PROP_POS_FRAMES));
             if (CurrentFrame >= FaceSprites.ColorMap[0].TOTAL_FRAMES){
@@ -100,7 +102,7 @@ void SpriteMath::SpriteColorMapUpdate(Expression& FaceSprites){
 
 // Function to calculate a single point on a Bezier curve
 int SpriteMath::Calculate_Single_Bezier_Curve(double t, int p0, int p1, int p2, int p3) {
-    int value = static_cast<int>(round((1 - t) * (1 - t) * (1 - t) * p0 + 3 * (1 - t) * (1 - t) * t * p1 + 3 * (1 - t) * t * t * p2 + t * t * t * p3));
+    int value = static_cast<int>((1 - t) * (1 - t) * (1 - t) * p0 + 3 * (1 - t) * (1 - t) * t * p1 + 3 * (1 - t) * t * t * p2 + t * t * t * p3);
     return value;
 }
 
@@ -208,7 +210,7 @@ void SpriteMath::EyeUpdate(){
             const cv::Point* ArrayEyeVerticies = &EyeVerticies[0];
             cv::fillPoly( EyeSprite, &ArrayEyeVerticies, numPointsEye, 1, cv::Scalar(255, 255, 255), cv::LINE_8);
             blinkSpeed.action_time = std::chrono::steady_clock::now();
-            Change = true; 
+            Change_= true; 
         }
     }
     else if (timeBetweenBlink.elapsed_time.count() >= timeBetweenBlink.wait_time)
@@ -220,7 +222,7 @@ void SpriteMath::EyeUpdate(){
         const cv::Point* ArrayEyeVerticies = &EyeVerticies[0];
         cv::fillPoly(EyeSprite, &ArrayEyeVerticies, numPointsEye, 1, cv::Scalar(255, 255, 255), cv::LINE_8);
         timeBetweenBlink.action_time = std::chrono::steady_clock::now();
-        Change = true; 
+        Change_= true; 
         Blinking = true; 
     }
 }
