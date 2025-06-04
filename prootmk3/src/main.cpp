@@ -5,7 +5,6 @@
 #include <boost/asio.hpp>
 #include "spritemath.hpp"
 #include "globals.hpp"
-#include "Setup.hpp"
 #include <stdlib.h>
 #include "Config.hpp"
 

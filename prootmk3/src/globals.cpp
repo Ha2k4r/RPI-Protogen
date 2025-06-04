@@ -16,17 +16,19 @@ Expression::Expression_sprite::Expression_sprite(
       //Type of sprite specifyers   
       ExpressionType(Params.ExpressionType)   //const std::string& video_path
 {}
-Expression::Colormap::Colormap(const Expression_Params& Params) : 
-  video(Params.MediaPath), 
+Expression::Colormap::Colormap(const Expression_Params& Params) :  
   ExpressionType(Params.ExpressionType),
+  location(Params.MediaPath),
   wait_time(Params.wait_time),
   action_time(std::chrono::steady_clock::time_point{}),
   elapsed_time(std::chrono::duration<double>(0)) 
   {
-      if (!video.isOpened()) {
+      if (ExpressionType == -1) {
+        std::cerr << "BUCKLE UP FUCKER, you put in no expression type for a sprite." << std::endl << 
+        "Valid options are : 0 for Image or 1 for Gif  DO: remember to resize your image or gif to the size of one of the panels" << std::endl;
         std::cerr << "Error: Could not open the video file." << std::endl;
       } else {
-        TOTAL_FRAMES = static_cast<unsigned int>(video.get(cv::CAP_PROP_FRAME_COUNT));
+        //TOTAL_FRAMES = static_cast<unsigned int>(video.get(cv::CAP_PROP_FRAME_COUNT));
       }
     }
 

@@ -61,9 +61,11 @@ void DisplayImage(SpriteMath& spritemath, RGBMatrix* matrix) {
   static cv::Mat FULLSCREEN = cv::Mat::zeros(cv::Size(128, 32), CV_8UC1);
   for (auto const& [key, val] : spritemath.InUseSprites){
     cv::add(val, SpriteCanvas, SpriteCanvas);
-    }
+  }
+  //Mask the Image over the Colormaps
   cv::bitwise_and(spritemath.InUseColorMap, spritemath.InUseColorMap, RightFrame, SpriteCanvas);
-  cv::flip(RightFrame, Left_Frame, 1 );    
+  //make the inverted other frame NOT GOOD FOR TEXT
+  cv::flip(RightFrame, Left_Frame, 1 ); 
   cv::hconcat(RightFrame, Left_Frame, FULLSCREEN);
 
   CopyImageToCanvas(FULLSCREEN, offscreen_canvas);
@@ -83,7 +85,9 @@ void DisplayImage(SpriteMath& spritemath) {
   for (auto const& [key, val] : spritemath.InUseSprites){
     cv::add(val, SpriteCanvas, SpriteCanvas);
     }
+  //Mask the Image over the Colormaps
   cv::bitwise_and(spritemath.InUseColorMap, spritemath.InUseColorMap, RightFrame, SpriteCanvas);
+  //make the inverted other frame NOT GOOD FOR TEXT
   cv::flip(RightFrame, Left_Frame, 1 );    
   cv::hconcat(RightFrame, Left_Frame, FULLSCREEN);
   cv::resize(FULLSCREEN,FULLSCREEN,cv::Size(FULLSCREEN.cols*10,FULLSCREEN.rows * 10), 0 , 0 , cv::INTER_LINEAR);

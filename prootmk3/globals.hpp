@@ -8,7 +8,7 @@
 struct Expression_Params {
   //Universial required items. 
   const std::string& UNIQUE_IDENTIFYER;
-  const double wait_time;
+  const double wait_time = 10;
   //sprite specific items
   const std::vector<cv::Point>& MainChords = {};
   const std::vector<cv::Point>& OposingChords = {};
@@ -65,16 +65,22 @@ class Expression {
 
 
       struct Colormap {
-        // fuck im so sorry i tried making image based color maps for a while and im open to help in the meantime
         private:
           std::chrono::time_point<std::chrono::steady_clock> action_time;
           const double wait_time;
           std::chrono::duration<double> elapsed_time;
         public: 
-          const int ExpressionType;
-          cv::VideoCapture video;
-          unsigned int TOTAL_FRAMES;
+          //required
+          const int ExpressionType; //If -1 throw error, if 0 its a image if 1 its a gif or other video i havent tested
           std::string location;
+          cv::Mat Frame = cv::Mat::zeros(cv::Size(64, 32), CV_8UC1);
+          
+          //Video Only
+          cv::VideoCapture video;
+
+          unsigned int CurrentFrame = 0;
+          unsigned int TOTAL_FRAMES;
+          
         bool IsUpdateTime();
         //initializer
         Colormap(const Expression_Params& Params);

@@ -88,13 +88,34 @@ void SpriteMath::SpriteColorMapUpdate(Expression& FaceSprites){
     
     if(FaceSprites.ColorMap[0].IsUpdateTime()==true){
         Change_ =true;
-            cv::Mat bakrnd_frame = cv::Mat::zeros(cv::Size(64, 32), CV_8UC1);
-            int CurrentFrame = static_cast<int>(FaceSprites.ColorMap[0].video.get(cv::CAP_PROP_POS_FRAMES));
-            if (CurrentFrame >= FaceSprites.ColorMap[0].TOTAL_FRAMES){
-                FaceSprites.ColorMap[0].video.set(cv::CAP_PROP_POS_FRAMES, 0);
+        //check if its a image
+        if(FaceSprites.ColorMap[0].ExpressionType == 0){
+            InUseColorMap = cv::imread(FaceSprites.ColorMap[0].location);
+        }//Check if its a Video (GIF)
+        else if(FaceSprites.ColorMap[0].ExpressionType == 1) {
+            if(FaceSprites.ColorMap[0].video.isOpened()){
+                if (FaceSprites.ColorMap[0].CurrentFrame+1 >= FaceSprites.ColorMap[0].TOTAL_FRAMES){
+                    FaceSprites.ColorMap[0].CurrentFrame = 0;
+                    FaceSprites.ColorMap[0].video.set(cv::CAP_PROP_POS_FRAMES, FaceSprites.ColorMap[0].CurrentFrame);
+                    FaceSprites.ColorMap[0].video.read(InUseColorMap);
+                }
+                else {
+                    FaceSprites.ColorMap[0].CurrentFrame = FaceSprites.ColorMap[0].CurrentFrame+1;
+                    FaceSprites.ColorMap[0].video.set(cv::CAP_PROP_POS_FRAMES, FaceSprites.ColorMap[0].CurrentFrame);
+                    FaceSprites.ColorMap[0].video.read(InUseColorMap);
+                }
+            }else{
+                FaceSprites.ColorMap[0].video = cv::VideoCapture(FaceSprites.ColorMap[0].location);
+                // if (!(FaceSprites.ColorMap[0].video.isOpened())){
+                //     std::cerr << "Video Failed to open, check your location bud.";
+                //     return;
+                // }
+                FaceSprites.ColorMap[0].TOTAL_FRAMES = static_cast<unsigned int>(FaceSprites.ColorMap[0].video.get(cv::CAP_PROP_FRAME_COUNT));
+                FaceSprites.ColorMap[0].CurrentFrame = 0;
+                FaceSprites.ColorMap[0].video.read(InUseColorMap);
             }
-            FaceSprites.ColorMap[0].video.read(bakrnd_frame);
-            InUseColorMap = bakrnd_frame;
+
+        }
     }
     else {}
 }
