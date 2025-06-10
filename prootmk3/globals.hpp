@@ -19,7 +19,6 @@ struct Expression_Params {
   const std::string& MediaPath = "";
   
 };
-
 //Class to encapsulate different facial expressions and the data involved to perform calculations based on them
 class Expression {
   //first time making nested anything so please be nice i know it is shit but its better than the spagetti i had before at least somewhat
@@ -35,6 +34,9 @@ class Expression {
           const double wait_time2;
           std::chrono::duration<double> elapsed_time2;
       public:
+          //Only used in image sprites which goes against math based the math based aproach of this program but some things should not be vectorized and do not need math operations performed on them
+          std::string location;
+          bool is_Preloaded_Image;
           //REQUIRED, otherwise it will conflict with others in the final Map (in the future colormaps will make use of this as well)
           const std::string UNIQUE_IDENTIFYER;
           //Geometric sprites will have cordinates and thus be rendered using fillpoly()

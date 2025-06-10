@@ -8,16 +8,18 @@ void SpriteMath::SpriteUpdate(Expression& FaceSprites){
         switch (sprite.ExpressionType)
         {
             case -1 :
+              {
                 if (sprite.IsUpdateTime()){
                     cv::Mat TempSprite = cv::Mat::zeros(cv::Size(64, 32), CV_8UC1);
                     const cv::Point* NumberOfChords[1] = { sprite.MainChords.data() };
                     const int numPointsNose[] = { static_cast<int>(sprite.MainChords.size()) };
                     cv::fillPoly(TempSprite, NumberOfChords, numPointsNose , 1, cv::Scalar(255, 255, 255), cv::LINE_8);
-                    InUseSprites[sprite.UNIQUE_IDENTIFYER] = TempSprite;
-                }
+                    //InUseSprites[sprite.UNIQUE_IDENTIFYER] = std::make_pair(TempSprite, &sprite);
+                    InUseSprites.insert({sprite.UNIQUE_IDENTIFYER, {TempSprite, &sprite}});
                 break;
-
+              }
             case 1 :
+              
                 if (sprite.ActiveAnimation){
                     if (sprite.IsUpdateTime2()){
                         if (sprite.AnimationInversion == false){ //If the eye is OPENING 
@@ -48,7 +50,7 @@ void SpriteMath::SpriteUpdate(Expression& FaceSprites){
                         cv::Mat TempSprite = cv::Mat::zeros(cv::Size(64, 32), CV_8UC1);
                         const cv::Point* NumberOfChords = &SpriteGeomatry[0];
                         cv::fillPoly(TempSprite, &NumberOfChords, numPoints , 1, cv::Scalar(255, 255, 255), cv::LINE_8);
-                        InUseSprites[sprite.UNIQUE_IDENTIFYER] = TempSprite;
+                        InUseSprites.insert({sprite.UNIQUE_IDENTIFYER, {TempSprite, &sprite}});
                         Change_= true; 
                     } else { 
                         continue;
@@ -63,11 +65,18 @@ void SpriteMath::SpriteUpdate(Expression& FaceSprites){
                         const cv::Point* NumberOfChords = &SpriteGeomatry[0];
                         const int numPoints[] = { static_cast<int>(sprite.MainChords.size()) };
                         cv::fillPoly(TempSprite, &NumberOfChords, numPoints, 1, cv::Scalar(255, 255, 255), cv::LINE_8);
-                        InUseSprites[sprite.UNIQUE_IDENTIFYER] = TempSprite;
+                        InUseSprites.insert({sprite.UNIQUE_IDENTIFYER, {TempSprite, &sprite}});
                         Change_= true; 
                         sprite.ActiveAnimation = true; 
                     }
+                break; 
+            case 2 :
+                {
+                cv::Mat TempSprite = cv::Mat::zeros(cv::Size(64, 32), CV_8UC1);
+                TempSprite = cv::imread(sprite.location);
+                InUseSprites.insert({sprite.UNIQUE_IDENTIFYER, {TempSprite, &sprite}});
                 break;
+                }
             case 3:
                 auto now = std::chrono::system_clock::now();
                 std::time_t time = std::chrono::system_clock::to_time_t(now);
@@ -78,10 +87,11 @@ void SpriteMath::SpriteUpdate(Expression& FaceSprites){
 
                 cv::Mat TempSprite = cv::Mat::zeros(cv::Size(64, 32), CV_8UC1);
                 cv::putText(TempSprite,buffer,cv::Point(5,29), cv::FONT_HERSHEY_COMPLEX_SMALL,1,(120,81,169),1);
-                InUseSprites[sprite.UNIQUE_IDENTIFYER] = TempSprite;
+                InUseSprites.insert({sprite.UNIQUE_IDENTIFYER, {TempSprite, &sprite}});
                 break;
         }
     }
+  }
 }
 
 void SpriteMath::SpriteColorMapUpdate(Expression& FaceSprites){

@@ -1,12 +1,11 @@
 #include "globals.hpp"
-Expression::Expression_sprite::Expression_sprite(
-    const Expression_Params& Params
-  )
+Expression::Expression_sprite::Expression_sprite(const Expression_Params& Params)
     : MainChords(Params.MainChords),
       OposingChords(Params.OposingChords),
       UNIQUE_IDENTIFYER(Params.UNIQUE_IDENTIFYER),
       wait_time(Params.wait_time),
       wait_time2(Params.wait_time2),
+      location(Params.MediaPath),
 
       //THESE SHOULD NEVER CHANGE
       action_time(std::chrono::steady_clock::time_point{}),
@@ -15,7 +14,13 @@ Expression::Expression_sprite::Expression_sprite(
       elapsed_time2(std::chrono::duration<double>(0)),
       //Type of sprite specifyers   
       ExpressionType(Params.ExpressionType)   //const std::string& video_path
-{}
+{ 
+  if (location.empty()){
+    is_Preloaded_Image = false;
+  }else{
+    is_Preloaded_Image = true;
+  }    
+}
 Expression::Colormap::Colormap(const Expression_Params& Params) :  
   ExpressionType(Params.ExpressionType),
   location(Params.MediaPath),

@@ -8,15 +8,16 @@
 #include "expression-vectors.hpp"
 #include "globals.hpp"
 #include <math.h>
-
+#include <bits/stdc++.h>
 class SpriteMath {
 public:
     //checks the sprites to see if they need to be updated and if so, the geomatrys of the 2d sprites get updated
     void SpriteUpdate(Expression& FaceSprites);
     //Checks to see if the colormap backround needs to be updated changed or otherwise incremented 
     void SpriteColorMapUpdate(Expression& FaceSprites);
-
-    std::map<std::string, cv::Mat> InUseSprites;
+    
+    std::map<std::string, std::pair< cv::Mat, Expression::Expression_sprite* >> InUseSprites;
+    
     cv::Mat InUseColorMap = cv::Mat::zeros(cv::Size(64,32), CV_8UC1);
 
     //Set to true if anything changes that the display needs to update 

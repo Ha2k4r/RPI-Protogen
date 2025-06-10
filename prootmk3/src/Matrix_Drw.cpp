@@ -53,7 +53,7 @@ RGBMatrix* InitializeMatrix() {
 }
 
 #ifndef TESTING_ENVIRONMENT
-void DisplayImage(SpriteMath& spritemath, RGBMatrix* matrix) {
+/*void DisplayImage(SpriteMath& spritemath, RGBMatrix* matrix) {
 
   static cv::Mat SpriteCanvas = cv::Mat::zeros(cv::Size(64, 32), CV_8UC1);
   static cv::Mat Left_Frame = cv::Mat::zeros(cv::Size(64, 32), CV_8UC1);
@@ -71,28 +71,79 @@ void DisplayImage(SpriteMath& spritemath, RGBMatrix* matrix) {
   CopyImageToCanvas(FULLSCREEN, offscreen_canvas);
   offscreen_canvas = matrix->SwapOnVSync(offscreen_canvas);
   offscreen_canvas -> Clear();
-}
+}*/
 #else
 void DisplayImage(SpriteMath& spritemath) {
+    // Right half of the final frame
+    static cv::Mat Right_Frame = cv::Mat::zeros(cv::Size(64, 32), CV_8UC3);
+    // Mirrored left half
+    static cv::Mat Left_Frame = cv::Mat::zeros(cv::Size(64, 32), CV_8UC3);
+    // Combined fullscreen display (Right + Left)
+    static cv::Mat FULLSCREEN = cv::Mat::zeros(cv::Size(128, 32), CV_8UC3);
 
-  static cv::Mat SpriteCanvas = cv::Mat::zeros(cv::Size(64, 32), CV_8UC1);
-  static cv::Mat Left_Frame = cv::Mat::zeros(cv::Size(64, 32), CV_8UC1);
-  static cv::Mat RightFrame = cv::Mat::zeros(cv::Size(64, 32), CV_8UC1);
-  static cv::Mat FULLSCREEN = cv::Mat::zeros(cv::Size(128, 32), CV_8UC1);
-  SpriteCanvas.setTo(0);
-  RightFrame.setTo(0);
-  
-  for (auto const& [key, val] : spritemath.InUseSprites){
-    cv::add(val, SpriteCanvas, SpriteCanvas);
+    // Clear the right frame before each new draw pass
+    Right_Frame.setTo(0);
+
+    // Shared canvas to hold one sprite per iteration
+    cv::Mat SpriteCanvas = cv::Mat::zeros(cv::Size(64, 32), CV_8UC3);
+
+    for (const auto& [key, spritePair] : spritemath.InUseSprites) {
+        const cv::Mat& spriteImage = spritePair.first;
+        Expression::Expression_sprite* expr = spritePair.second;
+
+        #ifdef NOT_PRODUCTION_ENVIRNMENT
+        if (!expr) {
+            std::cerr << "Missing expression for key: " << key << std::endl;
+            continue;
+        }
+        #endif
+
+        cv::Mat spriteColor;
+
+        if (expr->is_Preloaded_Image) {
+            // If sprite is preloaded, use it directly like a person whos afraid of math. HISS 
+            if (spriteImage.channels() == 1)
+                cv::cvtColor(spriteImage, SpriteCanvas, cv::COLOR_GRAY2BGR);
+            else
+                spriteImage.copyTo(SpriteCanvas);
+        } else {
+            // Convert sprite to 3-channel color if needed
+            if (spriteImage.channels() == 1)
+                cv::cvtColor(spriteImage, spriteColor, cv::COLOR_GRAY2BGR);
+            else
+                spriteColor = spriteImage;
+
+            #ifdef NOT_PRODUCTION_ENVIRNMENT
+            if (spriteColor.size() != spritemath.InUseColorMap.size() ||
+                spriteColor.type() != spritemath.InUseColorMap.type()) {
+                std::cerr << "Sprite mismatch (type or size) — skipping: " << key << "\n";
+                continue;
+            }
+            #endif  
+
+            // Mask the sprite using the color map
+            cv::bitwise_and(spriteColor, spritemath.InUseColorMap, SpriteCanvas);
+        }
+
+        // Composite onto the main right frame
+        cv::add(Right_Frame, SpriteCanvas, Right_Frame);
     }
-  //Mask the Image over the Colormaps
-  cv::bitwise_and(spritemath.InUseColorMap, spritemath.InUseColorMap, RightFrame, SpriteCanvas);
-  //make the inverted other frame NOT GOOD FOR TEXT
-  cv::flip(RightFrame, Left_Frame, 1 );    
-  cv::hconcat(RightFrame, Left_Frame, FULLSCREEN);
-  cv::resize(FULLSCREEN,FULLSCREEN,cv::Size(FULLSCREEN.cols*10,FULLSCREEN.rows * 10), 0 , 0 , cv::INTER_LINEAR);
-  cv::imshow("Protogen Output", FULLSCREEN);
-  cv::waitKey(1);
+
+    // Flip right frame to create left frame
+    cv::flip(Right_Frame, Left_Frame, 1);
+
+    // Combine left + right for fullscreen
+    cv::hconcat(Right_Frame, Left_Frame, FULLSCREEN);
+
+    // Upscale for viewing
+    cv::resize(FULLSCREEN, FULLSCREEN,
+               cv::Size(FULLSCREEN.cols * 10, FULLSCREEN.rows * 10),
+               0, 0, cv::INTER_LINEAR);
+
+    // Display
+    cv::imshow("Protogen Output", FULLSCREEN);
+    cv::waitKey(1);
 }
+
 #endif
 
