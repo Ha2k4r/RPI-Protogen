@@ -53,6 +53,7 @@ bool Expression::Expression_sprite::IsUpdateTime2() {
   auto now = std::chrono::steady_clock::now();
   elapsed_time2 = now - action_time2;
   if (elapsed_time2.count() >= wait_time2) {
+    //std::cout << "IsUpdateTime! " << UNIQUE_IDENTIFYER << std::endl; //This can be used 
     action_time2 = now;  // Reset action_time
     return true;
     } 

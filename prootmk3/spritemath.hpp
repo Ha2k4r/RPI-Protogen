@@ -27,7 +27,7 @@ private:
     int Calculate_Single_Bezier_Curve(double t, int p0, int p1, int p2, int p3);
     //Returns a RAW and importantly unpacked bezier path from a 2d polygon to another of the same number of verticies 
     //Notably factors can be used to increse or decrese the amplitude of the Path
-    std::vector<cv::Point> Calculate_Many_Bezier_Curves(const std::vector<cv::Point>& Array, const std::vector<cv::Point>& Target_Array, int num_points, double factor1 = 0.5 , double factor2 = 1.8 );
+    std::vector<cv::Point> Calculate_Many_Bezier_Curves(const std::vector<cv::Point>& Array, const std::vector<cv::Point>& Target_Array, int num_points,std::string Name, double factor1 = 0.5 , double factor2 = 1.8 );
     //Unpacks the RAW output from the ABOVE function -- and importantly returns a valid 2d polygon at (Index) location on the path 
     std::vector<cv::Point> UnpackBezierArray(int Index, std::vector<cv::Point> RawBezierArray, int Number_Of_Points_In_Polygon);
 

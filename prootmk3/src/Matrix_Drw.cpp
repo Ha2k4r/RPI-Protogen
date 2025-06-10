@@ -83,6 +83,8 @@ void DisplayImage(SpriteMath& spritemath) {
 
     // Clear the right frame before each new draw pass
     Right_Frame.setTo(0);
+    Left_Frame.setTo(0);
+    FULLSCREEN.setTo(0);
 
     // Shared canvas to hold one sprite per iteration
     cv::Mat SpriteCanvas = cv::Mat::zeros(cv::Size(64, 32), CV_8UC3);

@@ -15,34 +15,31 @@ void SpriteMath::SpriteUpdate(Expression& FaceSprites){
                     const int numPointsNose[] = { static_cast<int>(sprite.MainChords.size()) };
                     cv::fillPoly(TempSprite, NumberOfChords, numPointsNose , 1, cv::Scalar(255, 255, 255), cv::LINE_8);
                     //InUseSprites[sprite.UNIQUE_IDENTIFYER] = std::make_pair(TempSprite, &sprite);
-                    InUseSprites.insert({sprite.UNIQUE_IDENTIFYER, {TempSprite, &sprite}});
+                    InUseSprites[sprite.UNIQUE_IDENTIFYER] = std::make_pair(TempSprite, &sprite);
+                  }
                 break;
-              }
             case 1 :
-              
-                if (sprite.ActiveAnimation){
+                //std::cout << "Case 1 Called | " << std::endl << "ExpressionType is : "  << sprite.ExpressionType << std::endl <<"UNIQUE_IDENTIFYER : " << sprite.UNIQUE_IDENTIFYER << std::endl;
+                  if (sprite.ActiveAnimation){
                     if (sprite.IsUpdateTime2()){
-                        if (sprite.AnimationInversion == false){ //If the eye is OPENING 
-                            if (sprite.UIT < blink_Cycles - 1){
-                                sprite.UIT++;
-                            }
-                            else {
-                                RawBezierTrajectory = Calculate_Many_Bezier_Curves(sprite.OposingChords, sprite.MainChords, blink_Cycles);
-                                sprite.UIT = 0;
-                                sprite.AnimationInversion = true; 
-                            }
-                        } 
-                        else {
-                            if (sprite.UIT < blink_Cycles - 1){
-                                sprite.UIT++; 
-                            }
-                            else {
-                                sprite.AnimationInversion = false;
-                                sprite.ActiveAnimation = false;
-                                sprite.UIT = 0;
-                                continue;
-                            }
+                      if (sprite.AnimationInversion == false){ //If the eye is OPENING 
+                        if (sprite.UIT < blink_Cycles - 1){
+                          sprite.UIT++;
+                        } else {
+                          RawBezierTrajectory = Calculate_Many_Bezier_Curves(sprite.OposingChords, sprite.MainChords, blink_Cycles, sprite.UNIQUE_IDENTIFYER);
+                          sprite.UIT = 0;
+                          sprite.AnimationInversion = true; 
                         }
+                      } else {
+                          if (sprite.UIT < blink_Cycles - 1){
+                            sprite.UIT++; 
+                          } else {
+                            sprite.AnimationInversion = false;
+                            sprite.ActiveAnimation = false;
+                            sprite.UIT = 0;
+                            continue;
+                          }
+                      }
 
                         
                         std::vector<cv::Point> SpriteGeomatry = UnpackBezierArray(sprite.UIT, RawBezierTrajectory, blink_Cycles);
@@ -50,31 +47,28 @@ void SpriteMath::SpriteUpdate(Expression& FaceSprites){
                         cv::Mat TempSprite = cv::Mat::zeros(cv::Size(64, 32), CV_8UC1);
                         const cv::Point* NumberOfChords = &SpriteGeomatry[0];
                         cv::fillPoly(TempSprite, &NumberOfChords, numPoints , 1, cv::Scalar(255, 255, 255), cv::LINE_8);
-                        InUseSprites.insert({sprite.UNIQUE_IDENTIFYER, {TempSprite, &sprite}});
+                        InUseSprites[sprite.UNIQUE_IDENTIFYER] = std::make_pair(TempSprite, &sprite);
                         Change_= true; 
-                    } else { 
-                        continue;
-                    }
-                    }
-                    else if (sprite.IsUpdateTime() == true)
-                    {   
+                      }
+                    } else if (sprite.IsUpdateTime() == true)
+                      {   
                         sprite.UIT = 0;
-                        RawBezierTrajectory = Calculate_Many_Bezier_Curves(sprite.MainChords, sprite.OposingChords, blink_Cycles);
+                        RawBezierTrajectory = Calculate_Many_Bezier_Curves(sprite.MainChords, sprite.OposingChords, blink_Cycles, sprite.UNIQUE_IDENTIFYER);
                         static std::vector<cv::Point> SpriteGeomatry = UnpackBezierArray(sprite.UIT, RawBezierTrajectory, blink_Cycles);
                         cv::Mat TempSprite = cv::Mat::zeros(cv::Size(64, 32), CV_8UC1);
                         const cv::Point* NumberOfChords = &SpriteGeomatry[0];
                         const int numPoints[] = { static_cast<int>(sprite.MainChords.size()) };
                         cv::fillPoly(TempSprite, &NumberOfChords, numPoints, 1, cv::Scalar(255, 255, 255), cv::LINE_8);
-                        InUseSprites.insert({sprite.UNIQUE_IDENTIFYER, {TempSprite, &sprite}});
+                        InUseSprites[sprite.UNIQUE_IDENTIFYER] = std::make_pair(TempSprite, &sprite);
                         Change_= true; 
                         sprite.ActiveAnimation = true; 
-                    }
+                      }
                 break; 
             case 2 :
                 {
                 cv::Mat TempSprite = cv::Mat::zeros(cv::Size(64, 32), CV_8UC1);
                 TempSprite = cv::imread(sprite.location);
-                InUseSprites.insert({sprite.UNIQUE_IDENTIFYER, {TempSprite, &sprite}});
+                InUseSprites[sprite.UNIQUE_IDENTIFYER] = std::make_pair(TempSprite, &sprite);
                 break;
                 }
             case 3:
@@ -87,7 +81,7 @@ void SpriteMath::SpriteUpdate(Expression& FaceSprites){
 
                 cv::Mat TempSprite = cv::Mat::zeros(cv::Size(64, 32), CV_8UC1);
                 cv::putText(TempSprite,buffer,cv::Point(5,29), cv::FONT_HERSHEY_COMPLEX_SMALL,1,(120,81,169),1);
-                InUseSprites.insert({sprite.UNIQUE_IDENTIFYER, {TempSprite, &sprite}});
+                InUseSprites[sprite.UNIQUE_IDENTIFYER] = std::make_pair(TempSprite, &sprite);
                 break;
         }
     }
@@ -138,13 +132,16 @@ int SpriteMath::Calculate_Single_Bezier_Curve(double t, int p0, int p1, int p2, 
 }
 
 
-std::vector<cv::Point> SpriteMath::Calculate_Many_Bezier_Curves(const std::vector<cv::Point>& Array, const std::vector<cv::Point>& Target_Array, int num_points, double factor1, double factor2) {
+std::vector<cv::Point> SpriteMath::Calculate_Many_Bezier_Curves(const std::vector<cv::Point>& Array, const std::vector<cv::Point>& Target_Array, int num_points, std::string Name, double factor1, double factor2) {
     //FUTURE IDEA, Make debug mode or dev mode to switch between advanced error reporting and none for speed purpases.
     //I am absolutly open to any implementation using pointers 
     size_t total_points = Array.size() * num_points;
     std::vector<cv::Point> RawBezierArray;
     RawBezierArray.resize(total_points);
-
+    if (Target_Array.size() != Array.size()) {
+      std::cerr << "[SpriteMath] Error: Target_Array and Array must be the same size." << std::endl << "Offender is : " << Name << std::endl;
+    return {}; // return empty result
+}
     int index = 0;
 
     for (int i = 0; i < Array.size(); ++i) {
