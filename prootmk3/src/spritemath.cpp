@@ -81,7 +81,7 @@ void SpriteMath::SpriteUpdate(Expression& FaceSprites){
 
 
                 cv::Mat TempSprite = cv::Mat::zeros(cv::Size(64, 32), CV_8UC1);
-                cv::putText(TempSprite,buffer,cv::Point(1,20), cv::FONT_HERSHEY_COMPLEX_SMALL,1,(255,255,255),1);
+                cv::putText(TempSprite,buffer,cv::Point(1,22), cv::FONT_HERSHEY_COMPLEX_SMALL,1,(255,255,255),1);
                 InUseSprites[sprite.UNIQUE_IDENTIFYER] = std::make_pair(TempSprite, &sprite);
                 break;
               }
