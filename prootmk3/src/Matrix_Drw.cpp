@@ -53,25 +53,63 @@ RGBMatrix* InitializeMatrix() {
 }
 
 #ifndef TESTING_ENVIRONMENT
-/*void DisplayImage(SpriteMath& spritemath, RGBMatrix* matrix) {
+void DisplayImage(SpriteMath& spritemath, RGBMatrix* matrix) {
+  cv::Mat Right_Frame = cv::Mat::zeros(cv::Size(64, 32), CV_8UC3);
+  cv::Mat Left_Frame  = cv::Mat::zeros(cv::Size(64, 32), CV_8UC3);
+  cv::Mat FULLSCREEN  = cv::Mat::zeros(cv::Size(128, 32), CV_8UC3);
 
-  static cv::Mat SpriteCanvas = cv::Mat::zeros(cv::Size(64, 32), CV_8UC1);
-  static cv::Mat Left_Frame = cv::Mat::zeros(cv::Size(64, 32), CV_8UC1);
-  static cv::Mat RightFrame = cv::Mat::zeros(cv::Size(64, 32), CV_8UC1);
-  static cv::Mat FULLSCREEN = cv::Mat::zeros(cv::Size(128, 32), CV_8UC1);
-  for (auto const& [key, val] : spritemath.InUseSprites){
-    cv::add(val, SpriteCanvas, SpriteCanvas);
+    // Clear the right frame before each new draw pass
+    Right_Frame.setTo(0);
+    Left_Frame.setTo(0);
+    FULLSCREEN.setTo(0);
+
+    // Shared canvas to hold one sprite per iteration
+  for (const auto& [key, spritePair] : spritemath.InUseSprites) {
+    cv::Mat SpriteCanvas = cv::Mat::zeros(cv::Size(64, 32), CV_8UC3);
+    const cv::Mat& spriteImage = spritePair.first;
+    Expression::Expression_sprite* expr = spritePair.second;
+
+    if (!expr) continue;
+
+    cv::Mat spriteColor;
+
+    if (expr->is_Preloaded_Image) {
+      if (spriteImage.channels() == 1)
+        cv::cvtColor(spriteImage, SpriteCanvas, cv::COLOR_GRAY2BGR);
+      else
+        spriteImage.copyTo(SpriteCanvas);
+    } else {
+      if (spriteImage.channels() == 1)
+        cv::cvtColor(spriteImage, spriteColor, cv::COLOR_GRAY2BGR);
+      else
+        spriteColor = spriteImage;
+
+      if (spriteColor.size() != spritemath.InUseColorMap.size() ||
+          spriteColor.type() != spritemath.InUseColorMap.type()) {
+        std::cerr << "Sprite mismatch — skipping: " << key << std::endl <<
+          spriteColor.size() << " != " << spritemath.InUseColorMap.size() << std::endl <<
+          spriteColor.type() << " != " << spritemath.InUseColorMap.type() << std::endl;
+        continue;
+      }
+
+      cv::bitwise_and(spriteColor, spritemath.InUseColorMap, SpriteCanvas);
+    }
+
+    cv::add(Right_Frame, SpriteCanvas, Right_Frame);
+
+    if (expr->Flip) {
+      cv::flip(SpriteCanvas, SpriteCanvas, 1);
+    }
+
+    cv::add(Left_Frame, SpriteCanvas, Left_Frame);
   }
-  //Mask the Image over the Colormaps
-  cv::bitwise_and(spritemath.InUseColorMap, spritemath.InUseColorMap, RightFrame, SpriteCanvas);
-  //make the inverted other frame NOT GOOD FOR TEXT
-  cv::flip(RightFrame, Left_Frame, 1 ); 
-  cv::hconcat(RightFrame, Left_Frame, FULLSCREEN);
+
+  cv::hconcat(Right_Frame, Left_Frame, FULLSCREEN);
 
   CopyImageToCanvas(FULLSCREEN, offscreen_canvas);
   offscreen_canvas = matrix->SwapOnVSync(offscreen_canvas);
   offscreen_canvas -> Clear();
-}*/
+}
 #else
 void DisplayImage(SpriteMath& spritemath) {
   cv::Mat Right_Frame = cv::Mat::zeros(cv::Size(64, 32), CV_8UC3);
