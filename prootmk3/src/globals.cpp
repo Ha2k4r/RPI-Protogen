@@ -13,7 +13,9 @@ Expression::Expression_sprite::Expression_sprite(const Expression_Params& Params
       action_time2(std::chrono::steady_clock::time_point{}),
       elapsed_time2(std::chrono::duration<double>(0)),
       //Type of sprite specifyers   
-      ExpressionType(Params.ExpressionType)   //const std::string& video_path
+      ExpressionType(Params.ExpressionType),   //const std::string& video_path
+      //Do a flip?
+      Flip(Params.Flip)
 { 
   if (location.empty()){
     is_Preloaded_Image = false;

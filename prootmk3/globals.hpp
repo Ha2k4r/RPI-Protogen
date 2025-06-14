@@ -8,6 +8,7 @@
 struct Expression_Params {
   //Universial required items. 
   const std::string& UNIQUE_IDENTIFYER;
+  //This is in seconds
   const double wait_time = 10;
   //sprite specific items
   const std::vector<cv::Point>& MainChords = {};
@@ -17,6 +18,7 @@ struct Expression_Params {
   const double wait_time2 = 253;
   //ColorMap Specific items
   const std::string& MediaPath = "";
+  const bool Flip = true;
   
 };
 //Class to encapsulate different facial expressions and the data involved to perform calculations based on them
@@ -34,22 +36,26 @@ class Expression {
           const double wait_time2;
           std::chrono::duration<double> elapsed_time2;
       public:
-          //Only used in image sprites which goes against math based the math based aproach of this program but some things should not be vectorized and do not need math operations performed on them
-          std::string location;
-          bool is_Preloaded_Image;
+
           //REQUIRED, otherwise it will conflict with others in the final Map (in the future colormaps will make use of this as well)
           const std::string UNIQUE_IDENTIFYER;
           //Geometric sprites will have cordinates and thus be rendered using fillpoly()
           const std::vector<cv::Point>& MainChords;
           //Special geometric sprites that use "NeedBezier" will need a target point for the bezier curve to go to
           const std::vector<cv::Point>& OposingChords;
-
+          //Flip the image to the left screen or preserve the original primarily usefull for text
+          const bool Flip;
           //will use a bezier curve calculation to go to a setpoint, therby needing oposing chords as the setpoint
           //usefull for eye blinking, animations or cool transitions 
           //usually as transitions happen the updates should be faster so it switches to waitime2
           const int ExpressionType;
           bool IsUpdateTime();
           bool IsUpdateTime2();
+          
+          //Only used in image sprites which goes against math based the math based aproach of this program but some things should not be vectorized and do not need math operations performed on them
+          std::string location;
+          bool is_Preloaded_Image;
+
           //
           // All Below are only used by Functions for blinking or otherwise usage in future functions
           //
