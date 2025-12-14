@@ -7,7 +7,7 @@
 ### 📜 **FEATURES**
 - **Real-Time Rendering:** Converts vector graphics into pixel-perfect displays on an RGB matrix.  
 - **Open Source:** Licensed under the **MIT License WITH ATTRIBUTION CLAUSE** for freedom to use, copy, modify, merge, publish, and distribute.  
-- **Raspberry Pi Basis:** Designed for the Raspberry Pi, with plans to fully utilize this Arguably overkill hardware.
+- **Raspberry Pi Basis:** Designed for the Raspberry Pi, with plans to fully utilize this arguably overkill hardware.
 
 ---
 
@@ -100,7 +100,7 @@ This project wouldn't be possible without these incredible libraries and tools:
 ## 🎩 **SPECIAL THANKS**  
 - To the **furry community** and **individual fursuit makers** for inspiring me so much to persue all of this.
   special thanks to :
-  * [@Jting-F](https://www.youtube.com/@jting-f3237) for the *buetifull* and incredibly complicated Protogen design that inspired me to make my own!
+  * [@Jting-F](https://www.youtube.com/@jting-f3237) for the *beautifull* and incredibly complicated Protogen design that inspired me to make my own!
   * [@WafflesDoesArt](https://linktr.ee/wafflesdoesart) for their amazing discord community and Fantastic work on their own designs with a toutorial that sent me on this spiral!
   * My friends who contributed in small but meaningfull ways!
   * **YOU** a potential user of *this* software! thank you, keep being great and have a *great* day!
