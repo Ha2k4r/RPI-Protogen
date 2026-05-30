@@ -1,0 +1,69 @@
+{
+  "version": 3,
+  "configurePresets": [
+    {
+      "name": "desktop-debug",
+      "displayName": "Desktop Debug",
+      "description": "Desktop development with OpenCV display + verbose logging",
+      "binaryDir": "${sourceDir}/build/desktop-debug",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "TESTING_ENVIRONMENT": "ON",
+        "VERBOSE_LOGGING": "ON"
+      }
+    },
+    {
+      "name": "desktop-release",
+      "displayName": "Desktop Release",
+      "description": "Desktop build, production-like flags, no logging overhead",
+      "binaryDir": "${sourceDir}/build/desktop-release",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release",
+        "TESTING_ENVIRONMENT": "ON",
+        "VERBOSE_LOGGING": "OFF"
+      }
+    },
+    {
+      "name": "rpi-debug",
+      "displayName": "RPi Debug",
+      "description": "Build for Raspberry Pi (cross or native) with verbose logging",
+      "binaryDir": "${sourceDir}/build/rpi-debug",
+      "toolchainFile": "../cmake/armv8-rpi-toolchain.cmake",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "TESTING_ENVIRONMENT": "OFF",
+        "VERBOSE_LOGGING": "ON"
+      }
+    },
+    {
+      "name": "rpi-release",
+      "displayName": "RPi Release",
+      "description": "Build for Raspberry Pi (cross or native), stripped, no logging",
+      "binaryDir": "${sourceDir}/build/rpi-release",
+      "toolchainFile": "../cmake/armv8-rpi-toolchain.cmake",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release",
+        "TESTING_ENVIRONMENT": "OFF",
+        "VERBOSE_LOGGING": "OFF"
+      }
+    }
+  ],
+  "buildPresets": [
+    {
+      "name": "desktop-debug",
+      "configurePreset": "desktop-debug"
+    },
+    {
+      "name": "desktop-release",
+      "configurePreset": "desktop-release"
+    },
+    {
+      "name": "rpi-debug",
+      "configurePreset": "rpi-debug"
+    },
+    {
+      "name": "rpi-release",
+      "configurePreset": "rpi-release"
+    }
+  ]
+}

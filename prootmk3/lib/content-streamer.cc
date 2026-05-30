@@ -3,12 +3,14 @@
 #include "content-streamer.h"
 #include "led-matrix.h"
 
+#include <cstddef>
 #include <fcntl.h>
 #include <stdio.h>
 #include <string.h>
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <unistd.h>
+#include <sys/mman.h>
 
 #include <algorithm>
 
@@ -73,6 +75,40 @@ ssize_t MemStreamIO::Read(void *buf, size_t count) {
 ssize_t MemStreamIO::Append(const void *buf, size_t count) {
   buffer_.append((const char*)buf, count);
   return count;
+}
+
+MemMapViewInput::MemMapViewInput(int fd) : buffer_(nullptr) {
+  struct stat s;
+  if (fstat(fd, &s) < 0) {
+    close(fd);
+    perror("Couldn't get size");
+    return;   // Can't return error state from constructor. Stay uninitialized.
+  }
+
+  const size_t file_size = s.st_size;
+  buffer_ = (char*)mmap(nullptr, file_size, PROT_READ, MAP_SHARED, fd, 0);
+  close(fd);
+  if (buffer_ == MAP_FAILED) {
+    perror("Can't mmmap()");
+    return;
+  }
+  end_ = buffer_ + file_size;
+#ifdef POSIX_MADV_WILLNEED
+  // Trigger read-ahead if possible.
+  posix_madvise(buffer_, file_size, POSIX_MADV_WILLNEED);
+#endif
+}
+
+void MemMapViewInput::Rewind() { pos_ = buffer_; }
+ssize_t MemMapViewInput::Read(void *buf, size_t count) {
+  if (pos_ + count >= end_) return -1;
+  memcpy(buf, pos_, count);
+  pos_ += count;
+  return count;
+}
+
+MemMapViewInput::~MemMapViewInput() {
+  if (buffer_) munmap(buffer_, end_ - buffer_);
 }
 
 // Read exactly count bytes including retries. Returns success.
@@ -198,6 +234,23 @@ bool StreamReader::ReadFileHeader(const FrameCanvas &frame) {
   frame_buf_size_ = header.buf_size;
   if (!header_frame_buffer_)
     header_frame_buffer_ = new char [ sizeof(FrameHeader) + header.buf_size ];
+  return true;
+}
+// Namespace-scoped helper for canvas-aware compatibility so it can access
+// anonymous constants like kFileMagicValue and FullRead.
+bool StreamIOIsCompatibleWithCanvas(StreamIO* io, FrameCanvas* frame) {
+  if (!io || !frame) return false;
+  io->Rewind();
+  FileHeader header;
+  if (!FullRead(io, &header, sizeof(header))) { io->Rewind(); return false; }
+  if (header.magic != kFileMagicValue) { io->Rewind(); return false; }
+  if ((int)header.width != frame->width() || (int)header.height != frame->height()) { io->Rewind(); return false; }
+  if (header.is_wide_gpio != (sizeof(gpio_bits_t) == 8)) { io->Rewind(); return false; }
+  const char* data = nullptr;
+  size_t len = 0;
+  frame->Serialize(&data, &len);
+  if (header.buf_size != len) { io->Rewind(); return false; }
+  io->Rewind();
   return true;
 }
 }  // namespace rgb_matrix

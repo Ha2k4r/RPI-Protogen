@@ -43,7 +43,7 @@ RGBMatrix* InitializeMatrix() {
   options.chain_length = 2;
   options.hardware_mapping = "adafruit-hat-pwm";
   runtime_opt.gpio_slowdown = 4;
-  //runtime_opt.drop_privileges = false; 
+  runtime_opt.drop_privileges = false; 
   RGBMatrix* matrix = RGBMatrix::CreateFromOptions(options, runtime_opt);
   if (matrix == NULL) {
     fprintf(stderr, "Failed to initialize matrix.\n");

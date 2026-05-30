@@ -1,4 +1,4 @@
-#include "include/led-matrix.h"
+#include "led-matrix.h"
 #include <unistd.h>
 #include <opencv2/opencv.hpp>
 #include <vector>
@@ -21,6 +21,13 @@ Expression Smile, Blush, Clock;
   #else 
     void DisplayImage(SpriteMath& SpriteMath);
   #endif 
+
+#ifdef VERBOSE_LOGGING
+  static constexpr bool verbose = true;
+#else
+  static constexpr bool verbose = false;
+#endif
+
 int main() {
   std::vector<Expression> Faces = {Smile , Blush, Clock};
   init(Faces);
@@ -29,6 +36,16 @@ int main() {
     RGBMatrix* matrix = InitializeMatrix();
     #endif
   Expression* SelectedFace = &Faces[0];
+  if (verbose) {
+    std::cerr << "[VERBOSE] Initialized " << Faces.size() << " expressions" << std::endl;
+    std::cerr << "[VERBOSE] Mode: "
+#ifdef TESTING_ENVIRONMENT
+              << "desktop (OpenCV)"
+#else
+              << "RPi (RGB matrix)"
+#endif
+              << std::endl;
+  }
 
 while (true){ 
     spritemath.SpriteUpdate(*SelectedFace);

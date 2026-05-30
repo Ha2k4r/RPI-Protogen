@@ -81,7 +81,7 @@ void SpriteMath::SpriteUpdate(Expression& FaceSprites){
 
 
                 cv::Mat TempSprite = cv::Mat::zeros(cv::Size(64, 32), CV_8UC1);
-                cv::putText(TempSprite,buffer,cv::Point(1,22), cv::FONT_HERSHEY_COMPLEX_SMALL,1,(255,255,255),1);
+                cv::putText(TempSprite,buffer,cv::Point(1,22), cv::FONT_HERSHEY_COMPLEX_SMALL,1,cv::Scalar(255,255,255),1);
                 InUseSprites[sprite.UNIQUE_IDENTIFYER] = std::make_pair(TempSprite, &sprite);
                 break;
               }
@@ -97,7 +97,7 @@ void SpriteMath::SpriteColorMapUpdate(Expression& FaceSprites){
         //check if its a image
         if(FaceSprites.ColorMap[0].ExpressionType == 0){
             InUseColorMap = cv::imread(FaceSprites.ColorMap[0].location);
-        }//Check if its a Video (GIF)
+        }        //Check if its a Video (GIF)
         else if(FaceSprites.ColorMap[0].ExpressionType == 1) {
             if(FaceSprites.ColorMap[0].video.isOpened()){
                 if (FaceSprites.ColorMap[0].CurrentFrame+1 >= FaceSprites.ColorMap[0].TOTAL_FRAMES){
@@ -146,7 +146,7 @@ std::vector<cv::Point> SpriteMath::Calculate_Many_Bezier_Curves(const std::vecto
 }
     int index = 0;
 
-    for (int i = 0; i < Array.size(); ++i) {
+    for (size_t i = 0; i < Array.size(); ++i) {
         int x1 = Array[i].x, y1 = Array[i].y;
         int x2 = Target_Array[i].x, y2 = Target_Array[i].y;
 

@@ -1,21 +1,21 @@
 #include "globals.hpp"
 Expression::Expression_sprite::Expression_sprite(const Expression_Params& Params)
-    : MainChords(Params.MainChords),
-      OposingChords(Params.OposingChords),
-      UNIQUE_IDENTIFYER(Params.UNIQUE_IDENTIFYER),
-      wait_time(Params.wait_time),
-      wait_time2(Params.wait_time2),
-      location(Params.MediaPath),
 
-      //THESE SHOULD NEVER CHANGE
-      action_time(std::chrono::steady_clock::time_point{}),
+    //THESE SHOULD NEVER CHANGE
+    : action_time(std::chrono::steady_clock::time_point{}),
+      wait_time(Params.wait_time),
       elapsed_time(std::chrono::duration<double>(0)),
       action_time2(std::chrono::steady_clock::time_point{}),
+      wait_time2(Params.wait_time2),
       elapsed_time2(std::chrono::duration<double>(0)),
-      //Type of sprite specifyers   
+
+      UNIQUE_IDENTIFYER(Params.UNIQUE_IDENTIFYER),
+      MainChords(Params.MainChords),
+      OposingChords(Params.OposingChords),
+      Flip(Params.Flip),
+      //Type of sprite specifyers
       ExpressionType(Params.ExpressionType),   //const std::string& video_path
-      //Do a flip?
-      Flip(Params.Flip)
+      location(Params.MediaPath)
 { 
   if (location.empty()){
     is_Preloaded_Image = false;
@@ -23,12 +23,12 @@ Expression::Expression_sprite::Expression_sprite(const Expression_Params& Params
     is_Preloaded_Image = true;
   }    
 }
-Expression::Colormap::Colormap(const Expression_Params& Params) :  
-  ExpressionType(Params.ExpressionType),
-  location(Params.MediaPath),
-  wait_time(Params.wait_time),
+Expression::Colormap::Colormap(const Expression_Params& Params) :
   action_time(std::chrono::steady_clock::time_point{}),
-  elapsed_time(std::chrono::duration<double>(0)) 
+  wait_time(Params.wait_time),
+  elapsed_time(std::chrono::duration<double>(0)),
+  ExpressionType(Params.ExpressionType),
+  location(Params.MediaPath) 
   {
       if (ExpressionType == -1) {
         std::cerr << "BUCKLE UP FUCKER, you put in no expression type for a sprite." << std::endl << 

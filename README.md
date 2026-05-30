@@ -1,107 +1,307 @@
-# 🎨 **PROTOGEN VECTOR DRAWER FOR RGB MATRIX PANELS** 🚀  
-`An open-source project for rendering vector graphics on RGB LED matrix panels, optimized for use in protogens in fursuits. Built for Raspberry Pi with a focus on performance and real-time rendering.`
+# Protogen Vector Drawer For Hub75 Matrix Panels
 
-[What is a protogen you ask?](https://knowyourmeme.com/memes/protogen)
----
+An open-source vector graphics rendering pipeline on RGB LED matrix panels, for use in protogen fursuit heads. Built for Raspberry Pi with a priority on performance and real-time rendering.
 
-### 📜 **FEATURES**
-- **Real-Time Rendering:** Converts vector graphics into pixel-perfect displays on an RGB matrix.  
-- **Open Source:** Licensed under the **MIT License WITH ATTRIBUTION CLAUSE** for freedom to use, copy, modify, merge, publish, and distribute.  
-- **Raspberry Pi Basis:** Designed for the Raspberry Pi, with plans to fully utilize this arguably overkill hardware.
+[What is a protogen?](https://knowyourmeme.com/memes/protogen)
 
 ---
 
-## 🔧 **DEPENDENCIES**
-This project leverages powerful libraries and frameworks to handle image processing, matrix control, and asynchronous communication:
+## Features
 
-- [OpenCV - Computer Vision Library](https://github.com/opencv/opencv)  
-- [rpi-rgb-led-matrix - Control for RGB LED panels on Raspberry Pi](https://github.com/hzeller/rpi-rgb-led-matrix)  
-- [Boost.Asio - Asynchronous I/O Library](https://github.com/boostorg/asio)  
-- [Boost.Asio Official Documentation](https://www.boost.org/doc/libs/1_86_0/doc/html/boost_asio.html)
-
----
-
-## 🛠️ **INSTALLATION**
-
-1. Clone the repository:  
-   ```bash
-   git clone https://github.com/Ha2k4r/RPI-Protogen
-   cd ~/RPI-Protogen/prootmk3/
-   ```
-
-2. Install dependencies:  
-   ```bash
-   sudo apt update && sudo apt upgrade
-   sudo apt install libopencv-dev python3-opencv  
-   sudo apt-get install libboost-all-dev
-   ```
-
-3. Build the project using `make`:  
-   - Make the hzeller/rpi-rgb-led-matrix Library
-   ```bash
-   cd ~/RPI-Protogen/prootmk3/lib
-   make 
-   ```
-   ```bash
-   cd ~/RPI-Protogen/prootmk3/
-   mkdir build
-   make
-   ```
-
-5. Run the application:  
-   ```bash
-   sudo ./proot
-   ```
----
-
-## Hardware And Wireing 
-- This program will work with any raspberry pi with standard 3.3v gpio - *EXCEPT THE RASPBERRY PI 5*.
-
-- The screen is updated using Hzellers library, which can be modified for alternative wireing however the *Recomended* wireing is with a [Bonnet](https://www.adafruit.com/product/3211) with pins 4 and 8 shorted using a (preferably soldered) jumper wire to make use of pwm.
-
-- Each Matrix must be on a different Power line than the *RPI*'s gpio 5v as it cannot provide enough power. I recomend cutting a charger cables end and soldering the wire into the bonnets provided power input lines, and the USBA side should plug into the *RPI*'s Native USB. *Images provided in : [Wiring](https://github.com/Ha2k4r/RPI-Protogen/tree/main/Wiring)
-- Often these boards come with cables that have connectors crimped on. Cutting the ends on them and soldering them to a power source may be your best bet as it depends on your protogens screens power draw and desire for reliablity as the screens can easily draw 3.4 Amps of power. 
-
-## 🧬 **HOW IT WORKS**
-1. **Vectors:** Accepts pre-made geometry for sprites.  
-2. **Color Overlays:** Layers geometry over images or GIFs.  
-3. **Matrix Control:** Continuously updates the display with smooth transitions and animations.
+- **Real-Time Rendering** - Converts vector graphics into expressions on an RGB matrix.
+- **Material Overlay** - Layering geometry over images or GIFs for materials and future shader support.
+- **Smooth Transitions** - Cubic-Bezier-curve, Linear and exponential interpolation between expression states.
+- **Open Source** - Licensed under the GNU General Public License, version 3.
+- **Cross-Platform Build** - CMake-based build system supports Linux (native + cross), NixOS, and Windows (native desktop).
 
 ---
 
-## 🛑 **LICENSE**  
-This project is licensed under the **MIT License WITH ATTRIBUTION CLAUSE**.  
-You are free to use, modify, and distribute this project under the terms of the license.
+## 🛠️ Setup
 
-#### **Key Points of the License:**
-- Attribution is required for all distributions, modifications, and public uses.
-- The software is provided "as is," without warranty of any kind.
+<details>
+<summary>Raspberry Pi</summary>
 
-For more details, see the [Full License Text](https://opensource.org/licenses/MIT).
+```bash
+# Update your System
+sudo apt update -y && sudo apt upgrade -y
+# Dependencies
+sudo apt install cmake g++ pkg-config \
+  libopencv-dev libboost-dev \
+  libavcodec-dev libavformat-dev libavutil-dev \
+  libswscale-dev libswresample-dev \
+  libpng-dev libjpeg-dev libtiff-dev libwebp-dev \
+  libdc1394-dev libtbb-dev libopenexr-dev
+# Install the repo
+git clone https://github.com/Ha2k4r/RPI-Protogen
+cd RPI-Protogen/prootmk3
+cmake --preset rpi-release
+# Compile and build
+cmake --build --preset rpi-release
+sudo ./build/rpi-release/proot
+```
+
+</details>
+
+<details>
+<summary>Ubuntu/Debian Desktop</summary>
+
+```bash
+# Update your System
+sudo apt update -y && sudo apt upgrade -y
+# Dependencies
+sudo apt install cmake g++ pkg-config libopencv-dev libboost-dev
+# Install the repo
+git clone https://github.com/Ha2k4r/RPI-Protogen
+cd RPI-Protogen/prootmk3
+# Compile
+cmake --preset desktop-debug
+cmake --build --preset desktop-debug
+cmake --build --preset desktop-debug --target run
+```
+
+</details>
+
+<details>
+<summary>NixOS</summary>
+
+```bash
+git clone https://github.com/Ha2k4r/RPI-Protogen
+cd RPI-Protogen
+nix-shell
+```
+
+The Nix shell provides the toolchain for desktop testing.
+
+</details>
+
+<details>
+<summary>Windows</summary>
+
+```powershell
+# Install dependencies (choose one):
+#   vcpkg:     vcpkg install opencv4 boost-asio
+#   MSYS2:     pacman -S mingw-w64-ucrt-x86_64-opencv mingw-w64-ucrt-x86_64-boost
+
+# Build
+cd prootmk3
+cmake -B build -DTESTING_ENVIRONMENT=ON
+cmake --build build
+```
+
+> **Experimental:** This build method is untested and may have issues. The primary development platform is Linux.
+
+</details>
 
 ---
 
-## 🤝 **CONTRIBUTING**  
-As the sole developer currently maintaining this project, contributions are welcome!  
-- Submit issues or feature requests via GitHub Issues.  
-- Pull requests with well-documented code and comments are appreciated.
+## CMake Presets
+
+All presets are defined in `prootmk3/CMakePresets.json`. Run `cmake --build --preset <name>` from `prootmk3/`.
+
+Run `cd prootmk3` first, then:
+
+```
+cmake --preset desktop-debug
+cmake --build --preset desktop-debug
+```
+
+| Preset            | Target      | Mode    | Verbose | Use Case                           |
+| ----------------- | ----------- | ------- | ------- | ---------------------------------- |
+| `desktop-debug`   | Native host | Debug   | ON      | Remote dev and verbose debugging   |
+| `desktop-release` | Native host | Release | OFF     | Remote dev, great for testing      |
+| `rpi-debug`       | aarch64 RPi | Debug   | ON      | Cross-compile with diagnostics     |
+| `rpi-release`     | aarch64 RPi | Release | OFF     | Deploy to RPi, no logging overhead |
+
+Each preset controls two compile definitions:
+
+- **TESTING_ENVIRONMENT** - When ON, displays output via OpenCV `imshow()` (desktop). When OFF, drives the real RGB matrix.
+- **VERBOSE_LOGGING** - When ON, enables debug output prefixed with `[VERBOSE]`.
+
+Remote development is recommended for anyone implementing their own features or large changes, as compiling directly on the Raspberry Pi is slow.
 
 ---
 
-## 🌐 **RESOURCES & ACKNOWLEDGEMENTS**  
-This project wouldn't be possible without these incredible libraries and tools:  
-- [OpenCV Repository](https://github.com/opencv/opencv)  
-- [rpi-rgb-led-matrix Repository](https://github.com/hzeller/rpi-rgb-led-matrix)  
-- [Boost.Asio Repository](https://github.com/boostorg/asio)  
-- [Boost.Asio Documentation](https://www.boost.org/doc/libs/1_86_0/doc/html/boost_asio.html)
+## CMake Options
+
+Set these manually with `-D` to override presets:
+
+```bash
+cmake -S . -B build -DTESTING_ENVIRONMENT=OFF -DVERBOSE_LOGGING=ON
+cmake --build build
+```
+
+| Option                | Default | Description                                           |
+| --------------------- | ------- | ----------------------------------------------------- |
+| `TESTING_ENVIRONMENT` | ON      | Desktop OpenCV display vs real RGB matrix             |
+| `VERBOSE_LOGGING`     | OFF     | Enable verbose debug output                           |
+| `SYSROOT`             | (empty) | Path to aarch64 sysroot for cross-compilation linking |
 
 ---
 
-## 🎩 **SPECIAL THANKS**  
-- To the **furry community** and **individual fursuit makers** for inspiring me so much to persue all of this.
-  special thanks to :
-  * [@Jting-F](https://www.youtube.com/@jting-f3237) for the *beautifull* and incredibly complicated Protogen design that inspired me to make my own!
-  * [@WafflesDoesArt](https://linktr.ee/wafflesdoesart) for their amazing discord community and Fantastic work on their own designs with a toutorial that sent me on this spiral!
-  * My friends who contributed in small but meaningfull ways!
-  * **YOU** a potential user of *this* software! thank you, keep being great and have a *great* day!
-  
+## Cross-Compilation for Raspberry Pi
+
+Cross-compilation from any Linux machine to a Pi requires a **Debian Bookworm arm64 sysroot** (the Pi's libraries).
+The sysroot ensures the binary links against glibc 2.36 and the same library
+versions present on the Pi.
+
+### 1. Create a sysroot
+
+<details>
+<summary>Option A: From a running Pi (easiest)</summary>
+
+```bash
+# On any Linux machine with rsync
+SYSROOT=$(pwd)/build/rpi-sysroot
+mkdir -p "$SYSROOT"
+rsync -av pi@<pi-ip>:/usr/lib/aarch64-linux-gnu/ "$SYSROOT/usr/lib/aarch64-linux-gnu/"
+rsync -av pi@<pi-ip>:/usr/include/ "$SYSROOT/usr/include/"
+rsync -av pi@<pi-ip>:/lib/aarch64-linux-gnu/ "$SYSROOT/lib/aarch64-linux-gnu/"
+```
+
+</details>
+<details>
+<summary>Option B: debootstrap (no Pi needed)</summary>
+
+```bash
+sudo apt install debootstrap
+sudo tools/create-rpi-sysroot.sh /path/to/sysroot
+```
+
+On NixOS, enter `nix-shell` first (which provides `debootstrap`), then:
+
+```bash
+sudo $(which debootstrap) create-rpi-sysroot.sh /path/to/sysroot
+```
+
+</details>
+
+### 2. Build for Raspberry Pi
+
+<details>
+<summary>Ubuntu/Debian (or any Linux)</summary>
+
+```bash
+# Build with sysroot
+cd RPI-Protogen/prootmk3
+cmake --preset rpi-release -DSYSROOT=/path/to/sysroot
+cmake --build --preset rpi-release
+
+# Copy binary and run (binary expects color_maps/ relative to cwd)
+rsync -avz build/rpi-release/proot DEVICE@IP:~/RPI-Protogen/prootmk3/build/rpi-release/proot
+ssh DEVICE@IP "cd ~/RPI-Protogen/prootmk3 && sudo ./build/rpi-release/proot"
+```
+
+</details>
+
+<details>
+<summary>NixOS</summary>
+
+The development shell (see [Setup](#setup)) provides the cross-compiler and sets
+`$SYSROOT` automatically when a sysroot is found at `prootmk3/build/rpi-sysroot/`.
+
+```bash
+cd prootmk3
+cmake --preset rpi-release
+cmake --build --preset rpi-release
+
+# Copy binary (binary expects color_maps/ relative to cwd)
+rsync -avz build/rpi-release/proot DEVICE@IP:~/RPI-Protogen/prootmk3/build/rpi-release/proot
+```
+
+The toolchain file (`cmake/armv8-rpi-toolchain.cmake`) uses `$SYSROOT` to
+find aarch64 libraries. On NixOS, the cross-compiler comes from nixpkgs
+while ALL libraries come from the Debian sysroot -- so the binary links
+against glibc 2.36 and runs on any Debian Bookworm system.
+
+</details>
+
+<details>
+<summary>Windows (via WSL)</summary>
+
+Use **WSL** (Windows Subsystem for Linux) to run the Linux cross-compilation toolchain:
+
+```bash
+# Inside WSL (Ubuntu/Debian):
+git clone https://github.com/Ha2k4r/RPI-Protogen
+cd RPI-Protogen
+
+# Create a sysroot (requires a running Pi):
+sudo apt install rsync
+mkdir -p build/rpi-sysroot
+rsync -av pi@<pi-ip>:/usr/lib/aarch64-linux-gnu/ build/rpi-sysroot/usr/lib/aarch64-linux-gnu/
+rsync -av pi@<pi-ip>:/usr/include/         build/rpi-sysroot/usr/include/
+rsync -av pi@<pi-ip>:/lib/aarch64-linux-gnu/ build/rpi-sysroot/lib/aarch64-linux-gnu/
+
+# Build
+export SYSROOT=$(pwd)/build/rpi-sysroot
+cd prootmk3
+cmake --preset rpi-release -DSYSROOT=$SYSROOT
+cmake --build --preset rpi-release
+```
+
+Deploy the binary to the Pi using the instructions above.
+
+</details>
+
+## Hardware and Wiring
+
+- This section needs significant work, this is no mans land. however, with my current setup I followed hzeller's guide on setting up the
+- [Adafruit RGB Matrix Bonnet](https://www.adafruit.com/product/3211) with pins 4 and 8 shorted to support PWM (This can optionally be disabled, but is not reccomended and you must disable pwm in the matrix settings in the code)
+- Each matrix must be on a separate power line from the Pi's GPIO 5V. A janky solution that mostly works is Cutting a USB-A cable, soldering the power leads to the Matrices power inputs using the correct polarity, and plugging the USB-A end into the Pi's native USB port.
+  or actually do somthing proper with power leads to a battery as Matrices can draw up to 3.4A - good on some of you for planning your power supply accordingly.
+- Wiring diagrams: [Wiring](https://github.com/Ha2k4r/RPI-Protogen/tree/main/Wiring)
+
+The GPIO slowdown and hardware mapping are currently hardcoded at runtime in `Matrix_Drw.cpp` via `rgb_matrix::RuntimeOptions`. Edit that file to match your Pi model and wiring. If you experience flicker or odd glitches, adjust the `gpio_slowdown` value.
+
+---
+
+## How It Works
+
+1. **Vectors** - The program accepts pre-defined geometry for sprites (eyes, mouth, blush, etc.).
+2. **Color Overlays** - Geometry is layered over images or GIFs using bitwise operations.
+3. **Matrix Control** - The display is continuously updated with smooth Bezier-curve transitions and animations.
+4. **Serial Communication** - `serialport.cpp` reads commands from a microcontroller.
+
+Expressions are defined in `Config.cpp` and reference sprites and colormaps from the `color_maps/` directory. Each expression can contain multiple sprites and a color overlay, with independent timing and animation parameters.
+
+---
+
+## License
+
+This project is licensed under the **GNU General Public License, version 3**.
+
+```
+[x] Commercial use
+[x] Private use
+[x] Modification
+[x] Distribution
+[x] Sublicensing (under GPLv3)
+[x] Patent use
+[ ] Hold liable
+[ ] Use modified versions under a closed-source license
+[ ] Add additional restrictions
+```
+
+---
+
+## 🤝 Contributing
+
+As the sole developer currently maintaining this project, contributions are welcome. Submit issues or feature requests via GitHub Issues. Pull requests with well-documented code are appreciated.
+
+---
+
+## 🌐 Resources and Acknowledgements
+
+- [OpenCV](https://github.com/opencv/opencv)
+- [rpi-rgb-led-matrix](https://github.com/hzeller/rpi-rgb-led-matrix) by hzeller
+- [Boost.Asio](https://www.boost.org/doc/libs/1_86_0/doc/html/boost_asio.html)
+
+---
+
+## 🎩 Special Thanks
+
+- To the furry community and individual fursuit makers for the inspiration.
+- [@Jting-F](https://www.youtube.com/@jting-f3237) for the beautiful and incredibly complicated Protogen design that inspired this project.
+- [@WafflesDoesArt](https://linktr.ee/wafflesdoesart) for their amazing community and tutorial that started it all.
+- My friends who contributed in small but meaningful ways.
+- **You** - a potential user of this software. Thank you, keep being great.
