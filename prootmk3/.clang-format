@@ -1,0 +1,14 @@
+---
+BasedOnStyle: LLVM
+IndentWidth: 2
+UseTab: Never
+ColumnLimit: 0
+AllowShortFunctionsOnASingleLine: None
+AllowShortIfStatementsOnASingleLine: Never
+AllowShortLoopsOnASingleLine: false
+PointerAlignment: Left
+BreakBeforeBraces: Attach
+SpaceBeforeParens: ControlStatements
+PackConstructorInitializers: Never
+FixNamespaceComments: true
+---

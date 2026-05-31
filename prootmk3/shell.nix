@@ -76,6 +76,21 @@ pkgs.mkShell {
       echo "  Then: export SYSROOT=<output-dir>"
     fi
 
+    # --- Symlink compile_commands.json so clangd sees real compile flags ---
+    COMPILE_DB_DIRS=(
+      "$REPO_ROOT/prootmk3/build/desktop-release"
+      "$REPO_ROOT/prootmk3/build/rpi-release"
+      "$REPO_ROOT/prootmk3/build/desktop-debug"
+      "$REPO_ROOT/prootmk3/build/rpi-debug"
+    )
+    for dir in "''${COMPILE_DB_DIRS[@]}"; do
+      if [ -f "$dir/compile_commands.json" ]; then
+        ln -sf "$dir/compile_commands.json" "$REPO_ROOT/prootmk3/compile_commands.json"
+        echo "  clangd: linked $dir/compile_commands.json"
+        break
+      fi
+    done
+
     echo ""
     echo "  RPI-Protogen development shell"
     echo "  -----------------------------"
