@@ -4,50 +4,46 @@
     {
       "name": "desktop-debug",
       "displayName": "Desktop Debug",
-      "description": "Desktop development with OpenCV display + verbose logging",
+      "description": "Desktop development with OpenCV display",
       "binaryDir": "${sourceDir}/build/desktop-debug",
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Debug",
         "TESTING_ENVIRONMENT": "ON",
-        "VERBOSE_LOGGING": "ON",
         "CMAKE_EXPORT_COMPILE_COMMANDS": "ON"
       }
     },
     {
       "name": "desktop-release",
       "displayName": "Desktop Release",
-      "description": "Desktop build, production-like flags, no logging overhead",
+      "description": "Desktop build, production-like flags",
       "binaryDir": "${sourceDir}/build/desktop-release",
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Release",
         "TESTING_ENVIRONMENT": "ON",
-        "VERBOSE_LOGGING": "OFF",
         "CMAKE_EXPORT_COMPILE_COMMANDS": "ON"
       }
     },
     {
       "name": "rpi-debug",
       "displayName": "RPi Debug",
-      "description": "Build for Raspberry Pi (cross or native) with verbose logging",
+      "description": "Build for Raspberry Pi (cross or native) with debug symbols",
       "binaryDir": "${sourceDir}/build/rpi-debug",
       "toolchainFile": "../cmake/armv8-rpi-toolchain.cmake",
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Debug",
         "TESTING_ENVIRONMENT": "OFF",
-        "VERBOSE_LOGGING": "ON",
         "CMAKE_EXPORT_COMPILE_COMMANDS": "ON"
       }
     },
     {
       "name": "rpi-release",
       "displayName": "RPi Release",
-      "description": "Build for Raspberry Pi (cross or native), stripped, no logging",
+      "description": "Build for Raspberry Pi (cross or native), stripped, optimized",
       "binaryDir": "${sourceDir}/build/rpi-release",
       "toolchainFile": "../cmake/armv8-rpi-toolchain.cmake",
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Release",
         "TESTING_ENVIRONMENT": "OFF",
-        "VERBOSE_LOGGING": "OFF",
         "CMAKE_EXPORT_COMPILE_COMMANDS": "ON"
       }
     }

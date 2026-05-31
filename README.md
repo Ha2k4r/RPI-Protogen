@@ -105,17 +105,18 @@ cmake --preset desktop-debug
 cmake --build --preset desktop-debug
 ```
 
-| Preset            | Target      | Mode    | Verbose | Use Case                           |
-| ----------------- | ----------- | ------- | ------- | ---------------------------------- |
-| `desktop-debug`   | Native host | Debug   | ON      | Remote dev and verbose debugging   |
-| `desktop-release` | Native host | Release | OFF     | Remote dev, great for testing      |
-| `rpi-debug`       | aarch64 RPi | Debug   | ON      | Cross-compile with diagnostics     |
-| `rpi-release`     | aarch64 RPi | Release | OFF     | Deploy to RPi, no logging overhead |
+| Preset            | Mode      | Logging   | Use Case                           |
+| ----------------- | --------- | --------- | ---------------------------------- |
+| `desktop-debug`   | graphical | Normal    | Remote dev and verbose debugging   |
+| `desktop-release` | graphical | Less/none | Remote dev, great for testing      |
+| `rpi-debug`       | aarch64   | Normal    | Cross-compile with diagnostics     |
+| `rpi-release`     | aarch64   | Less/none | Deploy to RPi, no logging overhead |
 
-Each preset controls two compile definitions:
+When desktop is chosen, it outputs a graphical window and does not compile the RPI specific matrix display.
 
 - **TESTING_ENVIRONMENT** - When ON, displays output via OpenCV `imshow()` (desktop). When OFF, drives the real RGB matrix.
-- **VERBOSE_LOGGING** - When ON, enables debug output prefixed with `[VERBOSE]`.
+
+Verbose debug output is independent of presets (see [CMake Options](#cmake-options)).
 
 Remote development is recommended for anyone implementing their own features or large changes, as compiling directly on the Raspberry Pi is slow.
 
@@ -133,7 +134,7 @@ cmake --build build
 | Option                | Default | Description                                           |
 | --------------------- | ------- | ----------------------------------------------------- |
 | `TESTING_ENVIRONMENT` | ON      | Desktop OpenCV display vs real RGB matrix             |
-| `VERBOSE_LOGGING`     | OFF     | Enable verbose debug output                           |
+| `VERBOSE_LOGGING`     | OFF     | Enable verbose debug output (ALOT MORE)               |
 | `SYSROOT`             | (empty) | Path to aarch64 sysroot for cross-compilation linking |
 
 ---

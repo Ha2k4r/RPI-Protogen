@@ -1,5 +1,9 @@
 #ifndef CONFIG_H
 #define CONFIG_H
+
+#include <vector>
+#include "globals.hpp"
+
 //Change these values to dramatically change the function of the protogen
 
 // TESTING_ENVIRONMENT and VERBOSE_LOGGING are now set via CMake options.
