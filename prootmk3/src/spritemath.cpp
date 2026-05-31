@@ -1,6 +1,4 @@
 #include "spritemath.hpp"
-#include "chrono"
-#include <chrono>
 bool SpriteMath::Change_ = false;
 
 void SpriteMath::SpriteUpdate(Expression& FaceSprites) {
@@ -31,13 +29,9 @@ void SpriteMath::SpriteUpdate(Expression& FaceSprites) {
             if (sprite.UIT < blink_Cycles - 1) {
               sprite.UIT++;
             } else {
-              auto start = std::chrono::high_resolution_clock::now();
               RawBezierTrajectory = Calculate_Many_Bezier_Curves(
                   sprite.OposingChords, sprite.MainChords, blink_Cycles,
                   sprite.UNIQUE_IDENTIFYER);
-              auto stop = std::chrono::high_resolution_clock::now();
-              auto duration = std::chrono::duration_cast<std::chrono::microseconds>(stop - start);
-              std::cout << "Time to calculate: " << duration.count() << std::endl;
               sprite.UIT = 0;
               sprite.AnimationInversion = true;
             }
