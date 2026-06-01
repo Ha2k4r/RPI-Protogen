@@ -15,7 +15,8 @@ Expression::Expression_sprite::Expression_sprite(const Expression_Params& Params
       Flip(Params.Flip),
       //Type of sprite specifyers
       ExpressionType(Params.ExpressionType),   //const std::string& video_path
-      location(Params.MediaPath)
+      location(Params.MediaPath),
+      TrajectoryTimestamp(std::chrono::steady_clock::time_point{})
 { 
   if (location.empty()){
     is_Preloaded_Image = false;

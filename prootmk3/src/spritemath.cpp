@@ -17,18 +17,22 @@ void SpriteMath::SpriteUpdate(Expression& FaceSprites) {
       }
       break;
     case 1:
-      // std::cout << "Case 1 Called | " << std::endl << "ExpressionType is : "
-      // << sprite.ExpressionType << std::endl <<"UNIQUE_IDENTIFYER : " <<
-      // sprite.UNIQUE_IDENTIFYER << std::endl;
+      if (sprite.CloseTrajectory.empty()) {
+        sprite.CloseTrajectory = Calculate_Many_Bezier_Curves(
+            sprite.MainChords, sprite.OposingChords, blink_Cycles,
+            sprite.UNIQUE_IDENTIFYER);
+        sprite.OpenTrajectory = Calculate_Many_Bezier_Curves(
+            sprite.OposingChords, sprite.MainChords, blink_Cycles,
+            sprite.UNIQUE_IDENTIFYER);
+        sprite.TrajectoryTimestamp = std::chrono::steady_clock::now();
+      }
       if (sprite.ActiveAnimation) {
         if (sprite.IsUpdateTime2()) {
-          if (sprite.AnimationInversion == false) { // If the eye is OPENING
+          if (sprite.AnimationInversion == false) {
             if (sprite.UIT < blink_Cycles - 1) {
               sprite.UIT++;
             } else {
-              RawBezierTrajectory = Calculate_Many_Bezier_Curves(
-                  sprite.OposingChords, sprite.MainChords, blink_Cycles,
-                  sprite.UNIQUE_IDENTIFYER);
+              RawBezierTrajectory = sprite.OpenTrajectory;
               sprite.UIT = 0;
               sprite.AnimationInversion = true;
             }
@@ -55,11 +59,22 @@ void SpriteMath::SpriteUpdate(Expression& FaceSprites) {
           Change_ = true;
         }
       } else if (sprite.IsUpdateTime() == true) {
+        {
+          auto now = std::chrono::steady_clock::now();
+          if (std::chrono::duration_cast<std::chrono::seconds>(
+                  now - sprite.TrajectoryTimestamp).count() >= 60) {
+            sprite.CloseTrajectory = Calculate_Many_Bezier_Curves(
+                sprite.MainChords, sprite.OposingChords, blink_Cycles,
+                sprite.UNIQUE_IDENTIFYER);
+            sprite.OpenTrajectory = Calculate_Many_Bezier_Curves(
+                sprite.OposingChords, sprite.MainChords, blink_Cycles,
+                sprite.UNIQUE_IDENTIFYER);
+            sprite.TrajectoryTimestamp = now;
+          }
+        }
         sprite.UIT = 0;
-        RawBezierTrajectory = Calculate_Many_Bezier_Curves(
-            sprite.MainChords, sprite.OposingChords, blink_Cycles,
-            sprite.UNIQUE_IDENTIFYER);
-        static std::vector<cv::Point> SpriteGeomatry =
+        RawBezierTrajectory = sprite.CloseTrajectory;
+        std::vector<cv::Point> SpriteGeomatry =
             UnpackBezierArray(sprite.UIT, RawBezierTrajectory, blink_Cycles);
         sprite.SpriteBuffer.setTo(cv::Scalar::all(0));
         const cv::Point* NumberOfChords = &SpriteGeomatry[0];
@@ -221,70 +236,4 @@ SpriteMath::UnpackBezierArray(int Index, std::vector<cv::Point> RawBezierArray,
   return Polygon_Verticies;
 }
 
-/*
-void SpriteMath::SpriteUpdate(Expression& FaceSprites){
-    for (Expression::Expression_sprite& sprite : FaceSprites.Sprites){
-        if (sprite.IsUpdateTime()){
-        if (sprite.NeedBezier){
 
-        }
-        else {
-            cv::Mat TempSprite = cv::Mat::zeros(cv::Size(64, 32), CV_8UC1);
-            const cv::Point* NumberOfChords[1] = { sprite.MainChords.data() };
-            const int numPointsNose[] = {
-static_cast<int>(sprite.MainChords.size()) }; cv::fillPoly(TempSprite,
-NumberOfChords, numPointsNose , 1, cv::Scalar(255, 255, 255), cv::LINE_8);
-            InUseSprites[sprite.UNIQUE_IDENTIFYER] = TempSprite;
-        }
-        }
-    }
-}
-*/
-
-/*
-void SpriteMath::EyeUpdate(){
-    timeBetweenBlink.elapsed_time = std::chrono::steady_clock::now() -
-timeBetweenBlink.action_time; if (Blinking == true) { blinkSpeed.elapsed_time =
-std::chrono::steady_clock::now() - blinkSpeed.action_time; if
-(blinkSpeed.elapsed_time.count() >= blinkSpeed.wait_time){ if (eyeOpening ==
-true){ if (n < blink_Cycles - 1){ n++;
-                }
-                else {
-                    RawBezierEye = Calculate_Many_Bezier_Curves(Happy.CLOSED,
-Happy.DEFAULT, blink_Cycles); n = 0; eyeOpening = false;
-                }
-            }
-            else {
-                if (n < blink_Cycles - 1){
-                    n++;
-                }
-                else {
-                    eyeOpening = true;
-                    Blinking = false;
-                    timeBetweenBlink.action_time =
-std::chrono::steady_clock::now(); n = 0; return;
-                }
-            }
-
-            EyeSprite = cv::Mat::zeros(cv::Size(64, 32), CV_8UC1);
-            EyeVerticies = UnpackBezierArray(n, RawBezierEye, blink_Cycles);
-            const cv::Point* ArrayEyeVerticies = &EyeVerticies[0];
-            cv::fillPoly( EyeSprite, &ArrayEyeVerticies, numPointsEye, 1,
-cv::Scalar(255, 255, 255), cv::LINE_8); blinkSpeed.action_time =
-std::chrono::steady_clock::now(); Change_= true;
-        }
-    }
-    else if (timeBetweenBlink.elapsed_time.count() >=
-timeBetweenBlink.wait_time)
-    {
-        n = 0;
-        RawBezierEye = Calculate_Many_Bezier_Curves(Happy.DEFAULT, Happy.CLOSED,
-blink_Cycles); EyeVerticies = UnpackBezierArray(n, RawBezierEye, blink_Cycles);
-        EyeSprite = cv::Mat::zeros(cv::Size(64, 32), CV_8UC1);
-        const cv::Point* ArrayEyeVerticies = &EyeVerticies[0];
-        cv::fillPoly(EyeSprite, &ArrayEyeVerticies, numPointsEye, 1,
-cv::Scalar(255, 255, 255), cv::LINE_8); timeBetweenBlink.action_time =
-std::chrono::steady_clock::now(); Change_= true; Blinking = true;
-    }
-}
-*/

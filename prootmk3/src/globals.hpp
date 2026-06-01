@@ -69,6 +69,10 @@ class Expression {
           int UIT = 0;
 
           cv::Mat SpriteBuffer = cv::Mat::zeros(cv::Size(64, 32), CV_8UC1);
+          std::vector<cv::Point> CloseTrajectory;
+          std::vector<cv::Point> OpenTrajectory;
+          std::chrono::steady_clock::time_point TrajectoryTimestamp;
+
           // Constructor
           Expression_sprite(const Expression_Params& Params);
       };
