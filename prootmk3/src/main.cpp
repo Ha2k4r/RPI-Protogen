@@ -2,7 +2,9 @@
 #include "globals.hpp"
 #include "led-matrix.h"
 #include "spritemath.hpp"
+#ifndef TESTING_ENVIRONMENT
 #include <boost/asio.hpp>
+#endif
 #include <opencv2/opencv.hpp>
 #include <stdlib.h>
 #include <unistd.h>

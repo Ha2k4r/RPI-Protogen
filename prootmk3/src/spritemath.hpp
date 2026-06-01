@@ -3,12 +3,12 @@
 
 #include <map>
 #include <string>
+#ifndef TESTING_ENVIRONMENT
 #include <boost/asio.hpp>
+#endif
 #include <opencv2/opencv.hpp>
 #include "expression-vectors.hpp"
 #include "globals.hpp"
-#include <math.h>
-#include <bits/stdc++.h>
 class SpriteMath {
 public:
     //checks the sprites to see if they need to be updated and if so, the geomatrys of the 2d sprites get updated
