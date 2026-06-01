@@ -306,3 +306,13 @@ As the sole developer currently maintaining this project, contributions are welc
 - [@WafflesDoesArt](https://linktr.ee/wafflesdoesart) for their amazing community and tutorial that started it all.
 - My friends who contributed in small but meaningful ways.
 - **You** - a potential user of this software. Thank you, keep being great.
+
+---
+
+## Hall of Fame
+
+DM me on discord at Stolasbirb
+or at signal at bnuy.32 to get into the Hall of Fame or to ask for help, or request features.
+
+![Alt text](HallofFame/Ember.png)
+<img src="HallofFame/Nani.jpg" width="55%" />

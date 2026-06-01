@@ -62,7 +62,8 @@ void SpriteMath::SpriteUpdate(Expression& FaceSprites) {
         {
           auto now = std::chrono::steady_clock::now();
           if (std::chrono::duration_cast<std::chrono::seconds>(
-                  now - sprite.TrajectoryTimestamp).count() >= 60) {
+                  now - sprite.TrajectoryTimestamp)
+                  .count() >= 60) {
             sprite.CloseTrajectory = Calculate_Many_Bezier_Curves(
                 sprite.MainChords, sprite.OposingChords, blink_Cycles,
                 sprite.UNIQUE_IDENTIFYER);
@@ -159,7 +160,6 @@ int SpriteMath::Calculate_Single_Bezier_Curve(double t, int p0, int p1, int p2, 
   Cubic Bezier in Bernstiens form runs in 7 microseconds
   int value = static_cast<int>((1 - t) * (1 - t) * (1 - t) * p0 + 3 * (1 - t) * (1 - t) * t * p1 + 3 * (1 - t) * t * t * p2 + t * t * t * p3);
   return value;
-  /*
   Polynomial Bezier runs in 5 microseconds
   double t2 = t * t;
   double t3 = t2 * t;
@@ -235,5 +235,3 @@ SpriteMath::UnpackBezierArray(int Index, std::vector<cv::Point> RawBezierArray,
   }
   return Polygon_Verticies;
 }
-
-
