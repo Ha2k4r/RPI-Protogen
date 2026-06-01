@@ -3,20 +3,17 @@ bool SpriteMath::Change_ = false;
 
 void SpriteMath::SpriteUpdate(Expression& FaceSprites) {
   for (Expression::Expression_sprite& sprite : FaceSprites.Sprites) {
-    // Animation Logic, in this implementation its only for a eyeblinking
     switch (sprite.ExpressionType) {
     case -1: {
       if (sprite.IsUpdateTime()) {
-        cv::Mat TempSprite = cv::Mat::zeros(cv::Size(64, 32), CV_8UC1);
+        sprite.SpriteBuffer.setTo(cv::Scalar::all(0));
         const cv::Point* NumberOfChords[1] = {sprite.MainChords.data()};
         const int numPointsNose[] = {
             static_cast<int>(sprite.MainChords.size())};
-        cv::fillPoly(TempSprite, NumberOfChords, numPointsNose, 1,
+        cv::fillPoly(sprite.SpriteBuffer, NumberOfChords, numPointsNose, 1,
                      cv::Scalar(255, 255, 255), cv::LINE_8);
-        // InUseSprites[sprite.UNIQUE_IDENTIFYER] = std::make_pair(TempSprite,
-        // &sprite);
         InUseSprites[sprite.UNIQUE_IDENTIFYER] =
-            std::make_pair(TempSprite, &sprite);
+            std::make_pair(sprite.SpriteBuffer, &sprite);
       }
       break;
     case 1:
@@ -49,12 +46,12 @@ void SpriteMath::SpriteUpdate(Expression& FaceSprites) {
           std::vector<cv::Point> SpriteGeomatry =
               UnpackBezierArray(sprite.UIT, RawBezierTrajectory, blink_Cycles);
           const int numPoints[] = {static_cast<int>(sprite.MainChords.size())};
-          cv::Mat TempSprite = cv::Mat::zeros(cv::Size(64, 32), CV_8UC1);
+          sprite.SpriteBuffer.setTo(cv::Scalar::all(0));
           const cv::Point* NumberOfChords = &SpriteGeomatry[0];
-          cv::fillPoly(TempSprite, &NumberOfChords, numPoints, 1,
+          cv::fillPoly(sprite.SpriteBuffer, &NumberOfChords, numPoints, 1,
                        cv::Scalar(255, 255, 255), cv::LINE_8);
           InUseSprites[sprite.UNIQUE_IDENTIFYER] =
-              std::make_pair(TempSprite, &sprite);
+              std::make_pair(sprite.SpriteBuffer, &sprite);
           Change_ = true;
         }
       } else if (sprite.IsUpdateTime() == true) {
@@ -64,22 +61,20 @@ void SpriteMath::SpriteUpdate(Expression& FaceSprites) {
             sprite.UNIQUE_IDENTIFYER);
         static std::vector<cv::Point> SpriteGeomatry =
             UnpackBezierArray(sprite.UIT, RawBezierTrajectory, blink_Cycles);
-        cv::Mat TempSprite = cv::Mat::zeros(cv::Size(64, 32), CV_8UC1);
+        sprite.SpriteBuffer.setTo(cv::Scalar::all(0));
         const cv::Point* NumberOfChords = &SpriteGeomatry[0];
         const int numPoints[] = {static_cast<int>(sprite.MainChords.size())};
-        cv::fillPoly(TempSprite, &NumberOfChords, numPoints, 1,
+        cv::fillPoly(sprite.SpriteBuffer, &NumberOfChords, numPoints, 1,
                      cv::Scalar(255, 255, 255), cv::LINE_8);
         InUseSprites[sprite.UNIQUE_IDENTIFYER] =
-            std::make_pair(TempSprite, &sprite);
+            std::make_pair(sprite.SpriteBuffer, &sprite);
         Change_ = true;
         sprite.ActiveAnimation = true;
       }
       break;
     case 2: {
-      cv::Mat TempSprite = cv::Mat::zeros(cv::Size(64, 32), CV_8UC1);
-      TempSprite = cv::imread(sprite.location);
       InUseSprites[sprite.UNIQUE_IDENTIFYER] =
-          std::make_pair(TempSprite, &sprite);
+          std::make_pair(cv::imread(sprite.location), &sprite);
       break;
     }
     case 3:
@@ -90,12 +85,12 @@ void SpriteMath::SpriteUpdate(Expression& FaceSprites) {
         char buffer[80];
         std::strftime(buffer, sizeof(buffer), "%r:%P", localTime);
 
-        cv::Mat TempSprite = cv::Mat::zeros(cv::Size(64, 32), CV_8UC1);
-        cv::putText(TempSprite, buffer, cv::Point(1, 22),
+        sprite.SpriteBuffer.setTo(cv::Scalar::all(0));
+        cv::putText(sprite.SpriteBuffer, buffer, cv::Point(1, 22),
                     cv::FONT_HERSHEY_COMPLEX_SMALL, 1,
                     cv::Scalar(255, 255, 255), 1);
         InUseSprites[sprite.UNIQUE_IDENTIFYER] =
-            std::make_pair(TempSprite, &sprite);
+            std::make_pair(sprite.SpriteBuffer, &sprite);
         break;
       }
     }
