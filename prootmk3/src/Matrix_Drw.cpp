@@ -1,6 +1,9 @@
 #include "led-matrix.h"
 #include "graphics.h"
 #include "spritemath.hpp"
+#ifdef __ARM_NEON
+#include <arm_neon.h>
+#endif
 #include <opencv2/opencv.hpp>
 #include <string>
 #include <stdio.h>
@@ -41,6 +44,36 @@ RGBMatrix* InitializeMatrix() {
   return matrix;
 }
 
+#ifdef __ARM_NEON
+static void ApplyColormap(const cv::Mat& mask, const cv::Mat& colormap, cv::Mat& out) {
+  int total = static_cast<int>(mask.total());
+  const uint8_t* m = mask.data;
+  const uint8_t* c = colormap.data;
+  uint8_t* o = out.data;
+  int i = 0;
+  for (; i + 8 <= total; i += 8) {
+    uint8x8_t vm = vld1_u8(m + i);
+    uint8x8x3_t vc = vld3_u8(c + i * 3);
+    vc.val[0] = vand_u8(vc.val[0], vm);
+    vc.val[1] = vand_u8(vc.val[1], vm);
+    vc.val[2] = vand_u8(vc.val[2], vm);
+    vst3_u8(o + i * 3, vc);
+  }
+  for (; i < total; i++) {
+    uint8_t mv = m[i];
+    o[i*3]   = mv & c[i*3];
+    o[i*3+1] = mv & c[i*3+1];
+    o[i*3+2] = mv & c[i*3+2];
+  }
+}
+#else
+static void ApplyColormap(const cv::Mat& mask, const cv::Mat& colormap, cv::Mat& out) {
+  cv::Mat tmp;
+  cv::cvtColor(mask, tmp, cv::COLOR_GRAY2BGR);
+  cv::bitwise_and(tmp, colormap, out);
+}
+#endif
+
 #ifndef TESTING_ENVIRONMENT
 void DisplayImage(SpriteMath& spritemath, RGBMatrix* matrix) {
   cv::Mat Right_Frame = cv::Mat::zeros(cv::Size(64, 32), CV_8UC3);
@@ -60,28 +93,19 @@ void DisplayImage(SpriteMath& spritemath, RGBMatrix* matrix) {
 
     if (!expr) continue;
 
-    cv::Mat spriteColor;
-
     if (expr->is_Preloaded_Image) {
       if (spriteImage.channels() == 1)
         cv::cvtColor(spriteImage, SpriteCanvas, cv::COLOR_GRAY2BGR);
       else
         spriteImage.copyTo(SpriteCanvas);
     } else {
-      if (spriteImage.channels() == 1)
-        cv::cvtColor(spriteImage, spriteColor, cv::COLOR_GRAY2BGR);
-      else
-        spriteColor = spriteImage;
-
-      if (spriteColor.size() != spritemath.InUseColorMap.size() ||
-          spriteColor.type() != spritemath.InUseColorMap.type()) {
-        std::cerr << "Sprite mismatch — skipping: " << key << std::endl <<
-          spriteColor.size() << " != " << spritemath.InUseColorMap.size() << std::endl <<
-          spriteColor.type() << " != " << spritemath.InUseColorMap.type() << std::endl;
+      if (spriteImage.size() != spritemath.InUseColorMap.size()) {
+        std::cerr << "Sprite size mismatch — skipping: " << key << std::endl <<
+          spriteImage.size() << " != " << spritemath.InUseColorMap.size() << std::endl;
         continue;
       }
 
-      cv::bitwise_and(spriteColor, spritemath.InUseColorMap, SpriteCanvas);
+      ApplyColormap(spriteImage, spritemath.InUseColorMap, SpriteCanvas);
     }
 
     cv::add(Right_Frame, SpriteCanvas, Right_Frame);
@@ -118,28 +142,19 @@ void DisplayImage(SpriteMath& spritemath) {
 
     if (!expr) continue;
 
-    cv::Mat spriteColor;
-
     if (expr->is_Preloaded_Image) {
       if (spriteImage.channels() == 1)
         cv::cvtColor(spriteImage, SpriteCanvas, cv::COLOR_GRAY2BGR);
       else
         spriteImage.copyTo(SpriteCanvas);
     } else {
-      if (spriteImage.channels() == 1)
-        cv::cvtColor(spriteImage, spriteColor, cv::COLOR_GRAY2BGR);
-      else
-        spriteColor = spriteImage;
-
-      if (spriteColor.size() != spritemath.InUseColorMap.size() ||
-          spriteColor.type() != spritemath.InUseColorMap.type()) {
-        std::cerr << "Sprite mismatch — skipping: " << key << std::endl <<
-          spriteColor.size() << " != " << spritemath.InUseColorMap.size() << std::endl <<
-          spriteColor.type() << " != " << spritemath.InUseColorMap.type() << std::endl;
+      if (spriteImage.size() != spritemath.InUseColorMap.size()) {
+        std::cerr << "Sprite size mismatch — skipping: " << key << std::endl <<
+          spriteImage.size() << " != " << spritemath.InUseColorMap.size() << std::endl;
         continue;
       }
 
-      cv::bitwise_and(spriteColor, spritemath.InUseColorMap, SpriteCanvas);
+      ApplyColormap(spriteImage, spritemath.InUseColorMap, SpriteCanvas);
     }
 
     cv::add(Right_Frame, SpriteCanvas, Right_Frame);
