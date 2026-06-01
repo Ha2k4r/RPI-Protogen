@@ -1,21 +1,21 @@
-#include "led-matrix.h"
 #include "graphics.h"
+#include "led-matrix.h"
 #include "spritemath.hpp"
 #ifdef __ARM_NEON
 #include <arm_neon.h>
 #endif
-#include <opencv2/opencv.hpp>
-#include <string>
-#include <stdio.h>
-#include <unistd.h>
 #include "Config.hpp"
+#include <opencv2/opencv.hpp>
+#include <stdio.h>
+#include <string>
+#include <unistd.h>
 using rgb_matrix::Canvas;
-using rgb_matrix::RGBMatrix;
 using rgb_matrix::FrameCanvas;
+using rgb_matrix::RGBMatrix;
 
 FrameCanvas* offscreen_canvas = nullptr;
 
-void CopyImageToCanvas(const cv::Mat &image, Canvas *canvas) {
+void CopyImageToCanvas(const cv::Mat& image, Canvas* canvas) {
   rgb_matrix::SetImage(canvas, 0, 0, image.data,
                        image.total() * image.elemSize(),
                        image.cols, image.rows, true);
@@ -26,16 +26,16 @@ RGBMatrix* InitializeMatrix() {
   rgb_matrix::RuntimeOptions runtime_opt;
   RGBMatrix::Options options;
 
-  //options.pwm_lsb_nanoseconds = 50;
-  //options.show_refresh_rate = true;
-  //options.limit_refresh_rate_hz = 300;
-  //options.disable_hardware_pulsing=false;
+  // options.pwm_lsb_nanoseconds = 50;
+  // options.show_refresh_rate = true;
+  // options.limit_refresh_rate_hz = 300;
+  // options.disable_hardware_pulsing=false;
   options.rows = 32;
   options.cols = 64;
   options.chain_length = 2;
   options.hardware_mapping = "adafruit-hat-pwm";
   runtime_opt.gpio_slowdown = 4;
-  runtime_opt.drop_privileges = false; 
+  runtime_opt.drop_privileges = false;
   RGBMatrix* matrix = RGBMatrix::CreateFromOptions(options, runtime_opt);
   if (matrix == NULL) {
     fprintf(stderr, "Failed to initialize matrix.\n");
@@ -44,6 +44,9 @@ RGBMatrix* InitializeMatrix() {
   return matrix;
 }
 
+// ARM NEON is a architecture specific SUPER optimization and i honestly think its magic, It shows very little speed increses, and is totally overkill.
+// But i swear to god, the second 4k screens come in, yall will apretiate how fast this freaking thing is. and if it fails, it falls back to a reguler SIMD optimized BITWISE_AND
+// mask and thats still really cool and fast, just.. less hillariously overkill lmao
 #ifdef __ARM_NEON
 static void ApplyColormap(const cv::Mat& mask, const cv::Mat& colormap, cv::Mat& out) {
   int total = static_cast<int>(mask.total());
@@ -61,9 +64,9 @@ static void ApplyColormap(const cv::Mat& mask, const cv::Mat& colormap, cv::Mat&
   }
   for (; i < total; i++) {
     uint8_t mv = m[i];
-    o[i*3]   = mv & c[i*3];
-    o[i*3+1] = mv & c[i*3+1];
-    o[i*3+2] = mv & c[i*3+2];
+    o[i * 3] = mv & c[i * 3];
+    o[i * 3 + 1] = mv & c[i * 3 + 1];
+    o[i * 3 + 2] = mv & c[i * 3 + 2];
   }
 }
 #else
@@ -81,16 +84,17 @@ void DisplayImage(SpriteMath& spritemath, RGBMatrix* matrix) {
   cv::Mat FULLSCREEN(cv::Size(128, 32), CV_8UC3);
   cv::Mat SpriteCanvas(cv::Size(64, 32), CV_8UC3);
 
-    Right_Frame.setTo(0);
-    Left_Frame.setTo(0);
-    FULLSCREEN.setTo(0);
+  Right_Frame.setTo(0);
+  Left_Frame.setTo(0);
+  FULLSCREEN.setTo(0);
 
   for (const auto& [key, spritePair] : spritemath.InUseSprites) {
     SpriteCanvas.setTo(cv::Scalar::all(0));
     const cv::Mat& spriteImage = spritePair.first;
     Expression::Expression_sprite* expr = spritePair.second;
 
-    if (!expr) continue;
+    if (!expr)
+      continue;
 
     if (expr->is_Preloaded_Image) {
       if (spriteImage.channels() == 1)
@@ -99,8 +103,8 @@ void DisplayImage(SpriteMath& spritemath, RGBMatrix* matrix) {
         spriteImage.copyTo(SpriteCanvas);
     } else {
       if (spriteImage.size() != spritemath.InUseColorMap.size()) {
-        std::cerr << "Sprite size mismatch — skipping: " << key << std::endl <<
-          spriteImage.size() << " != " << spritemath.InUseColorMap.size() << std::endl;
+        std::cerr << "Sprite size mismatch — skipping: " << key << std::endl
+                  << spriteImage.size() << " != " << spritemath.InUseColorMap.size() << std::endl;
         continue;
       }
       ApplyColormap(spriteImage, spritemath.InUseColorMap, SpriteCanvas);
@@ -119,7 +123,7 @@ void DisplayImage(SpriteMath& spritemath, RGBMatrix* matrix) {
 
   CopyImageToCanvas(FULLSCREEN, offscreen_canvas);
   offscreen_canvas = matrix->SwapOnVSync(offscreen_canvas);
-  offscreen_canvas -> Clear();
+  offscreen_canvas->Clear();
 }
 #else
 void DisplayImage(SpriteMath& spritemath) {
@@ -128,16 +132,17 @@ void DisplayImage(SpriteMath& spritemath) {
   cv::Mat FULLSCREEN(cv::Size(128, 32), CV_8UC3);
   cv::Mat SpriteCanvas(cv::Size(64, 32), CV_8UC3);
 
-    Right_Frame.setTo(0);
-    Left_Frame.setTo(0);
-    FULLSCREEN.setTo(0);
+  Right_Frame.setTo(0);
+  Left_Frame.setTo(0);
+  FULLSCREEN.setTo(0);
 
   for (const auto& [key, spritePair] : spritemath.InUseSprites) {
     SpriteCanvas.setTo(cv::Scalar::all(0));
     const cv::Mat& spriteImage = spritePair.first;
     Expression::Expression_sprite* expr = spritePair.second;
 
-    if (!expr) continue;
+    if (!expr)
+      continue;
 
     if (expr->is_Preloaded_Image) {
       if (spriteImage.channels() == 1)
@@ -146,8 +151,8 @@ void DisplayImage(SpriteMath& spritemath) {
         spriteImage.copyTo(SpriteCanvas);
     } else {
       if (spriteImage.size() != spritemath.InUseColorMap.size()) {
-        std::cerr << "Sprite size mismatch — skipping: " << key << std::endl <<
-          spriteImage.size() << " != " << spritemath.InUseColorMap.size() << std::endl;
+        std::cerr << "Sprite size mismatch — skipping: " << key << std::endl
+                  << spriteImage.size() << " != " << spritemath.InUseColorMap.size() << std::endl;
         continue;
       }
       ApplyColormap(spriteImage, spritemath.InUseColorMap, SpriteCanvas);
@@ -171,4 +176,3 @@ void DisplayImage(SpriteMath& spritemath) {
 }
 
 #endif
-
