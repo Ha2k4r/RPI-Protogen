@@ -1,4 +1,5 @@
 #include "led-matrix.h"
+#include "graphics.h"
 #include "spritemath.hpp"
 #include <opencv2/opencv.hpp>
 #include <string>
@@ -10,23 +11,11 @@ using rgb_matrix::RGBMatrix;
 using rgb_matrix::FrameCanvas;
 
 FrameCanvas* offscreen_canvas = nullptr;
-// Copy an image to a Canvas.
-void CopyImageToCanvas(const cv::Mat &image, Canvas *canvas) {
-  const int offset_x = 0, offset_y = 0;  // If you want to move the image.
-  
-  cv::Mat rgb_image;
-  cv::cvtColor(image, rgb_image, cv::COLOR_BGR2RGB);  // Convert BGR to RGB
 
-  // Copy all the pixels to the canvas.
-  for (int y = 0; y < rgb_image.rows; ++y) {
-    for (int x = 0; x < rgb_image.cols; ++x) {
-      cv::Vec3b pixel = rgb_image.at<cv::Vec3b>(y, x);
-      canvas->SetPixel(x + offset_x, y + offset_y,
-                       pixel[0],  // Red
-                       pixel[1],  // Green
-                       pixel[2]); // Blue
-    }
-  }
+void CopyImageToCanvas(const cv::Mat &image, Canvas *canvas) {
+  rgb_matrix::SetImage(canvas, 0, 0, image.data,
+                       image.total() * image.elemSize(),
+                       image.cols, image.rows, true);
 }
 
 RGBMatrix* InitializeMatrix() {
