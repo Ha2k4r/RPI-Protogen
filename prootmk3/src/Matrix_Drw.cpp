@@ -76,18 +76,17 @@ static void ApplyColormap(const cv::Mat& mask, const cv::Mat& colormap, cv::Mat&
 
 #ifndef TESTING_ENVIRONMENT
 void DisplayImage(SpriteMath& spritemath, RGBMatrix* matrix) {
-  cv::Mat Right_Frame = cv::Mat::zeros(cv::Size(64, 32), CV_8UC3);
-  cv::Mat Left_Frame  = cv::Mat::zeros(cv::Size(64, 32), CV_8UC3);
-  cv::Mat FULLSCREEN  = cv::Mat::zeros(cv::Size(128, 32), CV_8UC3);
+  cv::Mat Right_Frame(cv::Size(64, 32), CV_8UC3);
+  cv::Mat Left_Frame(cv::Size(64, 32), CV_8UC3);
+  cv::Mat FULLSCREEN(cv::Size(128, 32), CV_8UC3);
+  cv::Mat SpriteCanvas(cv::Size(64, 32), CV_8UC3);
 
-    // Clear the right frame before each new draw pass
     Right_Frame.setTo(0);
     Left_Frame.setTo(0);
     FULLSCREEN.setTo(0);
 
-    // Shared canvas to hold one sprite per iteration
   for (const auto& [key, spritePair] : spritemath.InUseSprites) {
-    cv::Mat SpriteCanvas = cv::Mat::zeros(cv::Size(64, 32), CV_8UC3);
+    SpriteCanvas.setTo(cv::Scalar::all(0));
     const cv::Mat& spriteImage = spritePair.first;
     Expression::Expression_sprite* expr = spritePair.second;
 
@@ -104,7 +103,6 @@ void DisplayImage(SpriteMath& spritemath, RGBMatrix* matrix) {
           spriteImage.size() << " != " << spritemath.InUseColorMap.size() << std::endl;
         continue;
       }
-
       ApplyColormap(spriteImage, spritemath.InUseColorMap, SpriteCanvas);
     }
 
@@ -125,18 +123,17 @@ void DisplayImage(SpriteMath& spritemath, RGBMatrix* matrix) {
 }
 #else
 void DisplayImage(SpriteMath& spritemath) {
-  cv::Mat Right_Frame = cv::Mat::zeros(cv::Size(64, 32), CV_8UC3);
-  cv::Mat Left_Frame  = cv::Mat::zeros(cv::Size(64, 32), CV_8UC3);
-  cv::Mat FULLSCREEN  = cv::Mat::zeros(cv::Size(128, 32), CV_8UC3);
+  cv::Mat Right_Frame(cv::Size(64, 32), CV_8UC3);
+  cv::Mat Left_Frame(cv::Size(64, 32), CV_8UC3);
+  cv::Mat FULLSCREEN(cv::Size(128, 32), CV_8UC3);
+  cv::Mat SpriteCanvas(cv::Size(64, 32), CV_8UC3);
 
-    // Clear the right frame before each new draw pass
     Right_Frame.setTo(0);
     Left_Frame.setTo(0);
     FULLSCREEN.setTo(0);
 
-    // Shared canvas to hold one sprite per iteration
   for (const auto& [key, spritePair] : spritemath.InUseSprites) {
-    cv::Mat SpriteCanvas = cv::Mat::zeros(cv::Size(64, 32), CV_8UC3);
+    SpriteCanvas.setTo(cv::Scalar::all(0));
     const cv::Mat& spriteImage = spritePair.first;
     Expression::Expression_sprite* expr = spritePair.second;
 
@@ -153,7 +150,6 @@ void DisplayImage(SpriteMath& spritemath) {
           spriteImage.size() << " != " << spritemath.InUseColorMap.size() << std::endl;
         continue;
       }
-
       ApplyColormap(spriteImage, spritemath.InUseColorMap, SpriteCanvas);
     }
 
