@@ -32,7 +32,7 @@ sudo apt install cmake g++ pkg-config \
   libpng-dev libjpeg-dev libtiff-dev libwebp-dev \
   libdc1394-dev libtbb-dev libopenexr-dev
 # Install the repo
-git clone https://github.com/Ha2k4r/RPI-Protogen
+git clone --recurse-submodules https://github.com/bnuy1/RPI-Protogen
 cd RPI-Protogen/prootmk3
 cmake --preset rpi-release
 # Compile and build
@@ -51,7 +51,7 @@ sudo apt update -y && sudo apt upgrade -y
 # Dependencies
 sudo apt install cmake g++ pkg-config libopencv-dev libboost-dev
 # Install the repo
-git clone https://github.com/Ha2k4r/RPI-Protogen
+git clone --recurse-submodules https://github.com/bnuy1/RPI-Protogen
 cd RPI-Protogen/prootmk3
 # Compile
 cmake --preset desktop-debug
@@ -65,7 +65,7 @@ cmake --build --preset desktop-debug --target run
 <summary>NixOS</summary>
 
 ```bash
-git clone https://github.com/Ha2k4r/RPI-Protogen
+git clone --recurse-submodules https://github.com/bnuy1/RPI-Protogen
 cd RPI-Protogen
 nix-shell
 ```
@@ -223,7 +223,7 @@ Use **WSL** (Windows Subsystem for Linux) to run the Linux cross-compilation too
 
 ```bash
 # Inside WSL (Ubuntu/Debian):
-git clone https://github.com/Ha2k4r/RPI-Protogen
+git clone --recurse-submodules https://github.com/bnuy1/RPI-Protogen
 cd RPI-Protogen
 
 # Create a sysroot (requires a running Pi):
@@ -250,7 +250,7 @@ Deploy the binary to the Pi using the instructions above.
 - [Adafruit RGB Matrix Bonnet](https://www.adafruit.com/product/3211) with pins 4 and 8 shorted to support PWM (This can optionally be disabled, but is not reccomended and you must disable pwm in the matrix settings in the code)
 - Each matrix must be on a separate power line from the Pi's GPIO 5V. A janky solution that mostly works is Cutting a USB-A cable, soldering the power leads to the Matrices power inputs using the correct polarity, and plugging the USB-A end into the Pi's native USB port.
   or actually do somthing proper with power leads to a battery as Matrices can draw up to 3.4A - good on some of you for planning your power supply accordingly.
-- Wiring diagrams: [Wiring](https://github.com/Ha2k4r/RPI-Protogen/tree/main/Wiring)
+- Wiring diagrams: [Wiring](https://github.com/bnuy1/RPI-Protogen/tree/main/Wiring)
 
 The GPIO slowdown and hardware mapping are currently hardcoded at runtime in `Matrix_Drw.cpp` via `rgb_matrix::RuntimeOptions`. Edit that file to match your Pi model and wiring. If you experience flicker or odd glitches, adjust the `gpio_slowdown` value.
 
